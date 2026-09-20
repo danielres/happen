@@ -41,6 +41,7 @@ defmodule Happen.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:group, "~> 0.2.0"},
       {:picosat_elixir, "~> 0.2"},
       {:sourceror, "~> 1.8", only: [:dev, :test]},
       {:live_debugger, "~> 1.0", only: [:dev]},
