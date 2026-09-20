@@ -41,7 +41,7 @@ defmodule HappenWeb.Router do
   scope "/", HappenWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive
     auth_routes AuthController, Happen.Accounts.User, path: "/auth"
 
     sign_out_route AuthController, "/sign-out",
