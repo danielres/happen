@@ -3,9 +3,9 @@ config :ash, policies: [show_policy_breakdowns?: true]
 
 # Configure your database
 config :happen, Happen.Repo,
+  port: String.to_integer(System.get_env("PGPORT", "5432")),
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
   database: "happen_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
