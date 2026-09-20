@@ -47,10 +47,10 @@
 
   services.postgres = {
     enable = true;
-    port = 5433;
+    port = 5432;
     initialDatabases = [
-      { name = "wg_dev"; }
-      { name = "wg_test"; }
+      { name = "happen_dev"; }
+      { name = "happen_test"; }
     ];
     initialScript = ''
       CREATE ROLE postgres SUPERUSER LOGIN;  
