@@ -16,7 +16,8 @@ defmodule Happen.Application do
       # {Happen.Worker, arg},
       # Start to serve requests, typically the last entry
       HappenWeb.Endpoint,
-      {AshAuthentication.Supervisor, [otp_app: :happen]}
+      {AshAuthentication.Supervisor, [otp_app: :happen]},
+      {Group, name: :happen}
     ]
 
     # See https://elixir.hexdocs.pm/Supervisor.html
