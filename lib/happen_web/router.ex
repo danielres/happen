@@ -42,6 +42,8 @@ defmodule HappenWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/r/:room_id", RoomLive
+
     auth_routes AuthController, Happen.Accounts.User, path: "/auth"
 
     sign_out_route AuthController, "/sign-out",

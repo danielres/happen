@@ -3,7 +3,7 @@ defmodule Happen.Rooms.Room do
     otp_app: :happen,
     domain: Happen.Rooms,
     data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+    extensions: [AshAdmin.Domain, AshPhoenix]
 
   postgres do
     table "rooms"
@@ -12,6 +12,10 @@ defmodule Happen.Rooms.Room do
 
   actions do
     defaults [:read]
+
+    create :create_room do
+      accept [:name]
+    end
   end
 
   attributes do

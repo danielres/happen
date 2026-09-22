@@ -2,6 +2,18 @@
   "attributes": [
     {
       "allow_nil?": false,
+      "default": "fragment(\"gen_random_uuid()\")",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": true,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "id",
+      "type": "uuid"
+    },
+    {
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -42,8 +54,8 @@
   "create_table_options": null,
   "custom_indexes": [],
   "custom_statements": [],
-  "has_create_action": false,
-  "hash": "016AA011E462A8CB997C042B056557D5D04C460C4DA62EFDD075C4CA5F456215",
+  "has_create_action": true,
+  "hash": "DE219A944E9F392DD72650E4252B061905592466A4BA53D44568C722793F0504",
   "identities": [],
   "multitenancy": {
     "attribute": null,
