@@ -1,5 +1,4 @@
 defmodule HappenWeb.HomeLive do
-  alias Ash.Info.Manifest.Generator.CapabilitiesBuilder
   use HappenWeb, :live_view
   alias HappenWeb.Presence
 
