@@ -18,7 +18,8 @@ defmodule HappenWeb.RoomLive do
           |> assign(members: [])
           |> assign(member: nil)
           |> assign(messages: [])
-          # |> assign(member: member)
+
+        # |> assign(member: member)
 
         {:ok, socket}
 
@@ -114,13 +115,17 @@ defmodule HappenWeb.RoomLive do
 
             <form phx-submit="say" class="join grid grid-cols-[1fr_auto]">
               <input
-                class="join-item input w-full"
+                class="join-item input w-full input-primary"
                 type="text"
                 name="message"
                 placeholder="Say something"
+                phx-mounted={JS.focus()}
               />
 
-              <.button class="join-item btn" type="submit">Say</.button>
+              <.button class="join-item btn btn-primary" type="submit">
+                <.icon name="hero-paper-airplane -rotate-45" />
+                <span class="sr-only">Say</span>
+              </.button>
             </form>
           </section>
         </main>
