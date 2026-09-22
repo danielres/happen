@@ -39,7 +39,7 @@ defmodule HappenWeb.RoomLive do
     room_id = socket.assigns.room.id
     Presence.toggle(room_id, socket.assigns.member)
     member = socket.assigns.member
-    member = %{name: member.name, available?: !member.available?}
+    member = %{member | available?: !member.available?}
     socket = socket |> assign(member: member)
     {:noreply, socket}
   end
