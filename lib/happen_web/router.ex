@@ -43,6 +43,7 @@ defmodule HappenWeb.Router do
 
     live "/", HomeLive
     live "/r/:room_id", RoomLive
+    live "/_", AdminLive
 
     auth_routes AuthController, Happen.Accounts.User, path: "/auth"
 
