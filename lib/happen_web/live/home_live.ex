@@ -32,7 +32,7 @@ defmodule HappenWeb.HomeLive do
     ~H"""
     <Layouts.app mode="centered" flash={@flash}>
       <.form for={@form} phx-submit="submit" class="grid gap-2">
-        <.input field={@form[:name]} />
+        <.input field={@form[:name]} phx-mounted={JS.focus()} />
         <.button type="submit">Create new room</.button>
       </.form>
     </Layouts.app>
