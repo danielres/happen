@@ -53,8 +53,8 @@ defmodule HappenWeb.RoomLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
-      <%= if @member do %>
+    <%= if @member do %>
+      <Layouts.app flash={@flash}>
         <header class="bg-base-300 p-4 flex justify-end">
           <button phx-click="toggle" type="button" class="flex items-baseline gap-2 cursor-pointer">
             <span :if={@member.available?} class="text-success">Available now</span>
@@ -77,13 +77,15 @@ defmodule HappenWeb.RoomLive do
             </ul>
           </section>
         </main>
-      <% else %>
-        <form phx-submit="join">
-          <input type="text" class="input" name="name" placeholder="Enter your name" />
-          <button class="btn" type="submit">Join room</button>
+      </Layouts.app>
+    <% else %>
+      <Layouts.app mode="centered" flash={@flash}>
+        <form phx-submit="join" class="grid gap-2">
+          <input type="text" class="input" name="name" placeholder="How should we call you?" />
+          <.button type="submit">Join room</.button>
         </form>
-      <% end %>
-    </Layouts.app>
+      </Layouts.app>
+    <% end %>
     """
   end
 
