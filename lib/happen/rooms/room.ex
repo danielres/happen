@@ -18,6 +18,16 @@ defmodule Happen.Rooms.Room do
     end
   end
 
+  validations do
+    validate string_length(:name, min: 4) do
+      message "min 4 chars"
+    end
+
+    validate string_length(:name, max: 20) do
+      message "max 20 chars"
+    end
+  end
+
   attributes do
     uuid_primary_key :id
 
