@@ -119,7 +119,14 @@ defmodule HappenWeb.RoomLive do
     <% else %>
       <Layouts.app mode="centered" flash={@flash}>
         <form phx-submit="join" class="grid gap-2">
-          <input type="text" class="input" name="name" placeholder="How should we call you?" />
+          <input
+            type="text"
+            id="member-name-input"
+            phx-mounted={JS.focus()}
+            class="input"
+            name="name"
+            placeholder="How should we call you?"
+          />
           <.button type="submit">Join room</.button>
         </form>
       </Layouts.app>
