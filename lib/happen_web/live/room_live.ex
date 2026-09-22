@@ -4,15 +4,27 @@ defmodule HappenWeb.RoomLive do
 
   def mount(params, _session, socket) do
     room_id = params["room_id"]
-    Presence.monitor(socket, room_id)
 
-    socket =
-      socket
-      |> assign(room_id: room_id)
-      |> assign(members: [])
-      |> assign(member: nil)
+    case Happen.Rooms.get(Happen.Rooms.Room, room_id) do
+      {:ok, room} ->
+        Presence.monitor(socket, room_id)
 
-    {:ok, socket}
+        socket =
+          socket
+          |> assign(room_id: room_id)
+          |> assign(members: [])
+          |> assign(member: nil)
+
+        {:ok, socket}
+
+      {:error, error} ->
+        socket =
+          socket
+          |> put_flash(:info, "group not found")
+          |> push_navigate(to: ~p"/")
+
+        {:ok, socket}
+    end
   end
 
   def handle_event("toggle", _, socket) do
@@ -41,35 +53,37 @@ defmodule HappenWeb.RoomLive do
 
   def render(assigns) do
     ~H"""
-    <%= if @member do %>
-      <header class="bg-base-300 p-4 flex justify-end">
-        <button phx-click="toggle" type="button" class="flex items-baseline gap-2">
-          <span :if={@member.available?} class="text-success">Available now</span>
-          <span :if={!@member.available?} class="text-warning">Not available now</span>
-          <.badge member={@member} />
-        </button>
-      </header>
+    <Layouts.app flash={@flash}>
+      <%= if @member do %>
+        <header class="bg-base-300 p-4 flex justify-end">
+          <button phx-click="toggle" type="button" class="flex items-baseline gap-2 cursor-pointer">
+            <span :if={@member.available?} class="text-success">Available now</span>
+            <span :if={!@member.available?} class="text-warning">Not available now</span>
+            <.badge member={@member} />
+          </button>
+        </header>
 
-      <main class="p-4">
-        <section>
-          <h3 class="flex gap-4 items-baseline">
-            <span class="font-semibold">Online now</span>
-            <span class="text-success text-xs">Available</span>
-            <span class="text-warning text-xs">Not available</span>
-          </h3>
-          <ul class="flex flew-wrap gap-2">
-            <li :for={{_pid, member} <- @members}>
-              <.badge member={member} />
-            </li>
-          </ul>
-        </section>
-      </main>
-    <% else %>
-      <form phx-submit="join">
-        <input type="text" class="input" name="name" placeholder="Enter your name" />
-        <button class="btn" type="submit">Join room</button>
-      </form>
-    <% end %>
+        <main class="p-4">
+          <section>
+            <h3 class="flex gap-4 items-baseline">
+              <span class="font-semibold">Online now</span>
+              <span class="text-success text-xs">Available</span>
+              <span class="text-warning text-xs">Not available</span>
+            </h3>
+            <ul class="flex flew-wrap gap-2">
+              <li :for={{_pid, member} <- @members}>
+                <.badge member={member} />
+              </li>
+            </ul>
+          </section>
+        </main>
+      <% else %>
+        <form phx-submit="join">
+          <input type="text" class="input" name="name" placeholder="Enter your name" />
+          <button class="btn" type="submit">Join room</button>
+        </form>
+      <% end %>
+    </Layouts.app>
     """
   end
 

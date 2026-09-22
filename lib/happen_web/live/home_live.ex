@@ -30,10 +30,12 @@ defmodule HappenWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="submit">
-      <.input field={@form[:name]} label="Room name" />
-      <.button type="submit">submit</.button>
-    </.form>
+    <Layouts.app flash={@flash}>
+      <.form for={@form} phx-submit="submit">
+        <.input field={@form[:name]} label="Room name" />
+        <.button type="submit">submit</.button>
+      </.form>
+    </Layouts.app>
     """
   end
 end
