@@ -51,6 +51,7 @@ defmodule Happen.MixProject do
       {:ash_postgres, "~> 2.0"},
       {:ash_phoenix, "~> 2.0"},
       {:ash, "~> 3.0"},
+      {:bcrypt_elixir, "~> 3.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.8.14"},
       {:phoenix_ecto, "~> 4.5"},

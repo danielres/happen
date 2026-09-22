@@ -14,6 +14,18 @@
     },
     {
       "allow_nil?": false,
+      "default": "\"admin\"",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "singleton_key",
+      "type": "text"
+    },
+    {
+      "allow_nil?": false,
       "default": "nil",
       "generated?": false,
       "precision": null,
@@ -21,7 +33,7 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "name",
+      "source": "password_hash",
       "type": "text"
     },
     {
@@ -55,8 +67,23 @@
   "custom_indexes": [],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "DE219A944E9F392DD72650E4252B061905592466A4BA53D44568C722793F0504",
-  "identities": [],
+  "hash": "CFFC82648791D91FA806D9ECE2BDDE3BCC49582D6C942D95DE9079BDCBC80FE3",
+  "identities": [
+    {
+      "all_tenants?": false,
+      "base_filter": null,
+      "index_name": "admins_singleton_index",
+      "keys": [
+        {
+          "type": "atom",
+          "value": "singleton_key"
+        }
+      ],
+      "name": "singleton",
+      "nils_distinct?": true,
+      "where": null
+    }
+  ],
   "multitenancy": {
     "attribute": null,
     "global": null,
@@ -64,5 +91,5 @@
   },
   "repo": "Elixir.Happen.Repo",
   "schema": null,
-  "table": "rooms"
+  "table": "admins"
 }
