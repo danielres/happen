@@ -23,6 +23,7 @@ defmodule HappenWeb.Sections.Messages do
       phx-submit="say"
     >
       <input
+        id="message-input"
         class="join-item input w-full input-primary"
         type="text"
         name="message"
@@ -30,7 +31,13 @@ defmodule HappenWeb.Sections.Messages do
         phx-mounted={JS.focus()}
       />
 
-      <.button class="join-item btn btn-primary" type="submit">
+      <.button
+        id="message-submit"
+        class="join-item btn btn-primary"
+        type="submit"
+        phx-hook=".DisableWhenEmpty"
+        disabled
+      >
         <.icon name="hero-paper-airplane -rotate-45" />
         <span class="sr-only">Say</span>
       </.button>
@@ -39,7 +46,28 @@ defmodule HappenWeb.Sections.Messages do
     <script :type={Phoenix.LiveView.ColocatedHook} name=".ClearMessage">
       export default {
         mounted() {
-          this.handleEvent("message-sent", () => this.el.reset())
+          this.handleEvent("message-sent", () => {
+            this.el.reset()
+            this.el.elements.message.dispatchEvent(new Event("input"))
+          })
+        }
+      }
+    </script>
+
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".DisableWhenEmpty">
+      export default {
+        mounted() {
+          this.input = this.el.form.elements.message
+          this.syncDisabled = () => {
+            this.el.disabled = this.input.value.trim() === ""
+          }
+
+          this.input.addEventListener("input", this.syncDisabled)
+          this.syncDisabled()
+        },
+
+        destroyed() {
+          this.input.removeEventListener("input", this.syncDisabled)
         }
       }
     </script>
