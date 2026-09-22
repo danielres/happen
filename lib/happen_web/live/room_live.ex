@@ -100,7 +100,7 @@ defmodule HappenWeb.RoomLive do
 
           <main class="flex min-h-0 flex-1 flex-col gap-8 p-4">
             <section class="shrink-0">
-              <h3 class="font-semibold">Online now</h3>
+              <h3 class="small-caps opacity-60">Online now</h3>
 
               <ul class="flex flew-wrap gap-2">
                 <li :for={{_pid, member} <- @members}>
@@ -110,7 +110,7 @@ defmodule HappenWeb.RoomLive do
             </section>
 
             <section class="flex min-h-0 flex-1 flex-col gap-2">
-              <h3 class="shrink-0 font-semibold">Messages</h3>
+              <h3 :if={@messages |> length() > 0} class="small-caps opacity-60">Messages</h3>
               <HappenWeb.Sections.Messages.render messages={@messages} />
             </section>
           </main>
