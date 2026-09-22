@@ -1,7 +1,9 @@
 defmodule HappenWeb.RoomLive do
   use HappenWeb, :live_view
-  alias HappenWeb.Presence
+
   alias Happen.PS
+  alias HappenWeb.Components
+  alias HappenWeb.Presence
 
   def mount(params, _session, socket) do
     room_id = params["room_id"]
@@ -18,7 +20,8 @@ defmodule HappenWeb.RoomLive do
           |> assign(members: [])
           |> assign(member: nil)
           |> assign(messages: [])
-          # |> assign(member: member)
+
+        # |> assign(member: member)
 
         {:ok, socket}
 
@@ -91,7 +94,7 @@ defmodule HappenWeb.RoomLive do
             >
               <span :if={@member.available?} class="text-success">Available now</span>
               <span :if={!@member.available?} class="text-warning">Not available now</span>
-              <.badge member={@member} />
+              <HappenWeb.Components.Badge.render member={@member} />
             </button>
           </header>
 
@@ -101,73 +104,14 @@ defmodule HappenWeb.RoomLive do
 
               <ul class="flex flew-wrap gap-2">
                 <li :for={{_pid, member} <- @members}>
-                  <.badge member={member} />
+                  <HappenWeb.Components.Badge.render member={member} />
                 </li>
               </ul>
             </section>
 
             <section class="flex min-h-0 flex-1 flex-col gap-2">
               <h3 class="shrink-0 font-semibold">Messages</h3>
-
-              <ul
-                id="messages"
-                class="min-h-0 flex-1 space-y-1 overflow-y-auto"
-                phx-hook=".AutoScroll"
-              >
-                <li :for={message <- @messages} class="bg-base-200 py-2 px-4">
-                  <div class="text-sm opacity-50">{message.member.name}</div>
-                  <div>{message.body}</div>
-                </li>
-              </ul>
-
-              <form
-                id="message-form"
-                class="join grid shrink-0 grid-cols-[1fr_auto]"
-                phx-hook=".ClearMessage"
-                phx-submit="say"
-              >
-                <input
-                  class="join-item input w-full input-primary"
-                  type="text"
-                  name="message"
-                  placeholder="Say something"
-                  phx-mounted={JS.focus()}
-                />
-
-                <.button class="join-item btn btn-primary" type="submit">
-                  <.icon name="hero-paper-airplane -rotate-45" />
-                  <span class="sr-only">Say</span>
-                </.button>
-              </form>
-
-              <script :type={Phoenix.LiveView.ColocatedHook} name=".ClearMessage">
-                export default {
-                  mounted() {
-                    this.handleEvent("message-sent", () => this.el.reset())
-                  }
-                }
-              </script>
-
-              <script :type={Phoenix.LiveView.ColocatedHook} name=".AutoScroll">
-                export default {
-                  mounted() {
-                    this.scrollToBottom()
-                  },
-
-                  beforeUpdate() {
-                    this.followingLatest =
-                      this.el.scrollHeight - this.el.scrollTop - this.el.clientHeight < 64
-                  },
-
-                  updated() {
-                    if (this.followingLatest) this.scrollToBottom()
-                  },
-
-                  scrollToBottom() {
-                    this.el.scrollTop = this.el.scrollHeight
-                  }
-                }
-              </script>
+              <HappenWeb.Sections.Messages.render messages={@messages} />
             </section>
           </main>
         </div>
@@ -180,18 +124,6 @@ defmodule HappenWeb.RoomLive do
         </form>
       </Layouts.app>
     <% end %>
-    """
-  end
-
-  def badge(assigns) do
-    ~H"""
-    <span class={[
-      "badge ",
-      @member.available? && "bg-success",
-      !@member.available? && "bg-warning"
-    ]}>
-      {@member.name}
-    </span>
     """
   end
 end
