@@ -11,7 +11,7 @@ defmodule HappenWeb.RoomLive do
 
         socket =
           socket
-          |> assign(room_id: room_id)
+          |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
 
@@ -28,7 +28,7 @@ defmodule HappenWeb.RoomLive do
   end
 
   def handle_event("toggle", _, socket) do
-    room_id = socket.assigns.room_id
+    room_id = socket.assigns.room.id
     Presence.toggle(room_id, socket.assigns.member)
     member = socket.assigns.member
     member = %{name: member.name, available?: !member.available?}
@@ -37,7 +37,7 @@ defmodule HappenWeb.RoomLive do
   end
 
   def handle_event("join", %{"name" => name}, socket) do
-    room_id = socket.assigns.room_id
+    room_id = socket.assigns.room.id
     member = %{name: name, available?: true}
     Presence.join(room_id, member)
     socket = socket |> assign(member: member)
@@ -45,7 +45,7 @@ defmodule HappenWeb.RoomLive do
   end
 
   def handle_info({:group, _events, _info}, socket) do
-    room_id = socket.assigns.room_id
+    room_id = socket.assigns.room.id
     members = Presence.get_members(room_id)
     socket = socket |> assign(members: members)
     {:noreply, socket}
@@ -55,8 +55,17 @@ defmodule HappenWeb.RoomLive do
     ~H"""
     <%= if @member do %>
       <Layouts.app flash={@flash}>
-        <header class="bg-base-300 p-4 flex justify-end">
-          <button phx-click="toggle" type="button" class="flex items-baseline gap-2 cursor-pointer">
+        <header class="bg-base-300 p-4 flex justify-between gap-4 items-end">
+          <h1>
+            <div class="uppercase text-xs opacity-50">Room</div>
+            <div class="font-semibold opacity-60">{@room.name}</div>
+          </h1>
+
+          <button
+            phx-click="toggle"
+            type="button"
+            class="flex items-baseline gap-2 cursor-pointer text-xs"
+          >
             <span :if={@member.available?} class="text-success">Available now</span>
             <span :if={!@member.available?} class="text-warning">Not available now</span>
             <.badge member={@member} />
@@ -67,9 +76,8 @@ defmodule HappenWeb.RoomLive do
           <section>
             <h3 class="flex gap-4 items-baseline">
               <span class="font-semibold">Online now</span>
-              <span class="text-success text-xs">Available</span>
-              <span class="text-warning text-xs">Not available</span>
             </h3>
+
             <ul class="flex flew-wrap gap-2">
               <li :for={{_pid, member} <- @members}>
                 <.badge member={member} />
