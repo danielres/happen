@@ -19,9 +19,8 @@ defmodule HappenWeb.RoomLive do
           |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
+          |> assign(member_form: member_name_changeset(%{}) |> to_form(as: :member))
           |> assign(messages: [])
-
-        # |> assign(member: member)
 
         {:ok, socket}
 
@@ -44,12 +43,16 @@ defmodule HappenWeb.RoomLive do
     {:noreply, socket}
   end
 
-  def handle_event("join", %{"name" => name}, socket) do
-    room_id = socket.assigns.room.id
-    member = %{name: name, available?: true}
-    Presence.join(room_id, member)
-    socket = socket |> assign(member: member)
-    {:noreply, socket}
+  def handle_event("join", %{"member" => params}, socket) do
+    case params |> member_name_changeset() |> Ecto.Changeset.apply_action(:insert) do
+      {:ok, %{name: name}} ->
+        member = %{name: name, available?: true}
+        Presence.join(socket.assigns.room.id, member)
+        {:noreply, assign(socket, :member, member)}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :member_form, to_form(changeset, as: :member))}
+    end
   end
 
   def handle_info({:group, _events, _info}, socket) do
@@ -118,19 +121,32 @@ defmodule HappenWeb.RoomLive do
       </Layouts.app>
     <% else %>
       <Layouts.app mode="centered" flash={@flash}>
-        <form phx-submit="join" class="grid gap-2">
-          <input
-            type="text"
+        <.form
+          for={@member_form}
+          id="member-join-form"
+          class="grid gap-2"
+          phx-submit="join"
+        >
+          <.input
+            field={@member_form[:name]}
             id="member-name-input"
             phx-mounted={JS.focus()}
-            class="input"
-            name="name"
             placeholder="How should we call you?"
           />
-          <.button type="submit">Join room</.button>
-        </form>
+          <.button>Join room</.button>
+        </.form>
       </Layouts.app>
     <% end %>
     """
   end
+
+  defp member_name_changeset(params) do
+    {%{}, %{name: :string}}
+    |> Ecto.Changeset.cast(params, [:name])
+    |> Ecto.Changeset.validate_required([:name])
+    |> Ecto.Changeset.validate_length(:name, min: 3, message: "min 3 chars")
+    |> Ecto.Changeset.validate_length(:name, max: 12, message: "max 12 chars")
+  end
+
+  # * "should be %{count} character(s)"
 end
