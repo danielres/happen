@@ -41,12 +41,20 @@ defmodule HappenWeb.Router do
   scope "/", HappenWeb do
     pipe_through :browser
 
-    live "/", HomeLive
-    live "/r/:room_id", RoomLive
+    live_session :invitation_access,
+      on_mount: [{HappenWeb.LiveAccess, :require}] do
+      live "/", HomeLive
+      live "/r/:room_id", RoomLive
+    end
+
     live "/_", AdminLive
     post "/_/setup", AdminSessionController, :setup
     post "/_/login", AdminSessionController, :login
     delete "/_/logout", AdminSessionController, :logout
+
+    get "/invite/:token", AccessController, :redeem
+    get "/invite/:token/r/:room_id", AccessController, :redeem_room
+    get "/404", AccessController, :not_found
 
     auth_routes AuthController, Happen.Accounts.User, path: "/auth"
 

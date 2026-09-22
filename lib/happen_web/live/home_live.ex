@@ -1,6 +1,5 @@
 defmodule HappenWeb.HomeLive do
   use HappenWeb, :live_view
-  alias HappenWeb.Presence
 
   def mount(_params, _session, socket) do
     form = Happen.Rooms.form_to_create_room()
@@ -18,20 +17,10 @@ defmodule HappenWeb.HomeLive do
     end
   end
 
-  def handle_event("validate", form, socket) do
-    {:noreply, socket}
-  end
-
-  def handle_info({:group, _events, _info}, socket) do
-    members = Presence.get_members(@room)
-    socket = socket |> assign(members: members)
-    {:noreply, socket}
-  end
-
   def render(assigns) do
     ~H"""
     <Layouts.app mode="centered" flash={@flash}>
-      <.form for={@form} phx-submit="submit" class="grid gap-2">
+      <.form id="create-room-form" for={@form} phx-submit="submit" class="grid gap-2">
         <.input field={@form[:name]} phx-mounted={JS.focus()} phx-hook="CapitalizeFirstLetter" />
         <.button type="submit">Create new room</.button>
       </.form>

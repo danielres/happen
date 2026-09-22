@@ -2,6 +2,7 @@ defmodule HappenWeb.AdminLive do
   use HappenWeb, :live_view
 
   alias Happen.Accounts
+  alias HappenWeb.LiveAccess
 
   def mount(_params, session, socket) do
     admin = load_admin()
@@ -89,7 +90,14 @@ defmodule HappenWeb.AdminLive do
   end
 
   def handle_event("disable-invitation", %{"id" => id}, socket) do
-    update_invitation(socket, id, &Accounts.disable_invitation/1)
+    with {:ok, invitation} <- Accounts.get_invitation(id),
+         {:ok, invitation} <- Accounts.disable_invitation(invitation) do
+      LiveAccess.revoke(invitation.id)
+      {:noreply, stream_insert(socket, :invitations, invitation)}
+    else
+      {:error, _error} ->
+        {:noreply, put_flash(socket, :error, "Could not update invitation")}
+    end
   end
 
   def handle_event("enable-invitation", %{"id" => id}, socket) do
@@ -99,6 +107,7 @@ defmodule HappenWeb.AdminLive do
   def handle_event("delete-invitation", %{"id" => id}, socket) do
     with {:ok, invitation} <- Accounts.get_invitation(id),
          :ok <- Accounts.destroy_invitation(invitation) do
+      LiveAccess.revoke(invitation.id)
       {:noreply, stream_delete(socket, :invitations, invitation)}
     else
       {:error, _error} ->

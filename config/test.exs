@@ -8,13 +8,25 @@ config :ash, policies: [show_policy_breakdowns?: true], disable_async?: true
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :happen, Happen.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "happen_test#{System.get_env("MIX_TEST_PARTITION")}",
-  pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
+database_connection =
+  case System.get_env("PGHOST") do
+    "/" <> _path = socket_dir -> [socket_dir: socket_dir]
+    hostname when is_binary(hostname) -> [hostname: hostname]
+    nil -> [hostname: "localhost"]
+  end
+
+config :happen,
+       Happen.Repo,
+       Keyword.merge(
+         [
+           username: "postgres",
+           password: "postgres",
+           database: "happen_test#{System.get_env("MIX_TEST_PARTITION")}",
+           pool: Ecto.Adapters.SQL.Sandbox,
+           pool_size: System.schedulers_online() * 2
+         ],
+         database_connection
+       )
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.

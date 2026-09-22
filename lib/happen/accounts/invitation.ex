@@ -16,6 +16,23 @@ defmodule Happen.Accounts.Invitation do
       prepare build(sort: [created_at: :desc])
     end
 
+    read :list_enabled do
+      filter expr(is_nil(disabled_at))
+      prepare build(sort: [created_at: :desc])
+    end
+
+    read :get_enabled do
+      get? true
+      argument :id, :uuid, allow_nil?: false
+      filter expr(id == ^arg(:id) and is_nil(disabled_at))
+    end
+
+    read :get_enabled_by_token_hash do
+      get? true
+      argument :token_hash, :string, allow_nil?: false, sensitive?: true
+      filter expr(token_hash == ^arg(:token_hash) and is_nil(disabled_at))
+    end
+
     create :create do
       accept []
 
