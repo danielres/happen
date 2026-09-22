@@ -1,6 +1,7 @@
 defmodule HappenWeb.RoomLive do
   use HappenWeb, :live_view
   alias HappenWeb.Presence
+  alias Happen.PS
 
   def mount(params, _session, socket) do
     room_id = params["room_id"]
@@ -8,12 +9,16 @@ defmodule HappenWeb.RoomLive do
     case Happen.Rooms.get(Happen.Rooms.Room, room_id) do
       {:ok, room} ->
         Presence.monitor(socket, room_id)
+        PS.messages_subscribe(socket, room)
+        member = %{name: "toto", available?: true}
 
         socket =
           socket
           |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
+          |> assign(messages: [])
+          # |> assign(member: member)
 
         {:ok, socket}
 
@@ -51,6 +56,20 @@ defmodule HappenWeb.RoomLive do
     {:noreply, socket}
   end
 
+  def handle_info(%{message: msg}, socket) do
+    message = %{member: socket.assigns.member, body: msg}
+    messages = socket.assigns.messages
+    messages = messages ++ [message]
+    socket = socket |> assign(messages: messages)
+    {:noreply, socket}
+  end
+
+  def handle_event("say", params, socket) do
+    message = %{member: socket.assigns.member, body: params["message"]}
+    PS.message_broadcast(socket.assigns.room, params["message"])
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <%= if @member do %>
@@ -72,17 +91,37 @@ defmodule HappenWeb.RoomLive do
           </button>
         </header>
 
-        <main class="p-4">
+        <main class="p-4 space-y-8">
           <section>
-            <h3 class="flex gap-4 items-baseline">
-              <span class="font-semibold">Online now</span>
-            </h3>
+            <h3 class="font-semibold">Online now</h3>
 
             <ul class="flex flew-wrap gap-2">
               <li :for={{_pid, member} <- @members}>
                 <.badge member={member} />
               </li>
             </ul>
+          </section>
+
+          <section class="space-y-2">
+            <h3 class="font-semibold">Messages</h3>
+
+            <ul class="space-y-1">
+              <li :for={message <- @messages} class="bg-base-200 py-2 px-4">
+                <div class="text-sm opacity-50">{message.member.name}</div>
+                <div>{message.body}</div>
+              </li>
+            </ul>
+
+            <form phx-submit="say" class="join grid grid-cols-[1fr_auto]">
+              <input
+                class="join-item input w-full"
+                type="text"
+                name="message"
+                placeholder="Say something"
+              />
+
+              <.button class="join-item btn" type="submit">Say</.button>
+            </form>
           </section>
         </main>
       </Layouts.app>

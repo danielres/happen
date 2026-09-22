@@ -1,13 +1,13 @@
 defmodule Happen.PS do
   alias Phoenix.PubSub
 
-  def subscribe(socket) do
+  def messages_subscribe(socket, room) do
     if Phoenix.LiveView.connected?(socket) do
-      PubSub.subscribe(Happen.PubSub, "room")
+      PubSub.subscribe(Happen.PubSub, "messages:#{room.id}")
     end
   end
 
-  def broadcast(msg) do
-    PubSub.broadcast(Happen.PubSub, "room", msg)
+  def message_broadcast(room, msg) do
+    PubSub.broadcast(Happen.PubSub, "messages:#{room.id}", %{message: msg})
   end
 end
