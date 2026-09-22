@@ -56,8 +56,7 @@ defmodule HappenWeb.RoomLive do
     {:noreply, socket}
   end
 
-  def handle_info(%{message: msg}, socket) do
-    message = %{member: socket.assigns.member, body: msg}
+  def handle_info(%{message: message}, socket) do
     messages = socket.assigns.messages
     messages = messages ++ [message]
     socket = socket |> assign(messages: messages)
@@ -65,7 +64,12 @@ defmodule HappenWeb.RoomLive do
   end
 
   def handle_event("say", params, socket) do
-    :ok = PS.message_broadcast(socket.assigns.room, params["message"])
+    :ok =
+      PS.message_broadcast(socket.assigns.room, %{
+        member: socket.assigns.member,
+        body: params["message"]
+      })
+
     {:noreply, push_event(socket, "message-sent", %{})}
   end
 
