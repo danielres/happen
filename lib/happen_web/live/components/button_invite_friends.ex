@@ -30,7 +30,7 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
           id="room-invitation-details"
           class="grid max-w-2xl gap-3 bg-base-200 p-4"
         >
-          <p class="opacity-75">Share link with your friends to invite them to this room.</p>
+          <p class="opacity-75">Share this link with your friends to invite them to this room.</p>
           <p
             id="room-invitation-url"
             class="opacity-75 break-all rounded bg-base-300 p-2 font-mono text-sm"
@@ -41,6 +41,7 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
           <div class="flex justify-end gap-2">
             <.button
               id="cancel-room-invitation"
+              class="btn btn-sm btn-primary btn-soft"
               type="button"
               phx-click="cancel-room-invitation"
               phx-target={@myself}
@@ -50,7 +51,7 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
 
             <.button
               id="copy-room-invitation"
-              class="btn btn-primary"
+              class="btn btn-primary btn-sm"
               type="button"
               phx-click="copy-room-invitation"
               phx-target={@myself}
@@ -87,19 +88,23 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
         </.form>
       </div>
 
-      <div
-        :if={!@sharing_room?}
-        class="flex justify-end p-4 h-0"
-      >
-        <button
-          id="invite-friends"
-          phx-click="invite-friends"
-          phx-target={@myself}
-          type="button"
-          class="btn btn-sm btn-primary"
+      <div class="relative">
+        <div
+          :if={!@sharing_room?}
+          class={["absolute top-2 right-4 z-50"]}
         >
-          <.icon name="hero-user-plus-micro" /> Invite friends
-        </button>
+          <button
+            id="invite-friends"
+            phx-click="invite-friends"
+            phx-target={@myself}
+            type="button"
+            class="btn btn-circle btn-primary tooltip tooltip-primary tooltip-left"
+            data-tip="Invite friends"
+          >
+            <.icon name="hero-user-plus-solid" class="size-5" />
+            <span class="sr-only">Invite friends</span>
+          </button>
+        </div>
       </div>
 
       <script :type={Phoenix.LiveView.ColocatedHook} name=".InviteFriends">
