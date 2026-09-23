@@ -1,5 +1,6 @@
 defmodule HappenWeb.RoomLive do
   use HappenWeb, :live_view
+  use ConnectedComponent.LiveView
 
   alias Happen.PS
   alias HappenWeb.Presence
@@ -52,14 +53,6 @@ defmodule HappenWeb.RoomLive do
       {:error, changeset} ->
         {:noreply, assign(socket, :member_form, to_form(changeset, as: :member))}
     end
-  end
-
-  def handle_event("room-clipboard-result", %{"success" => true}, socket) do
-    {:noreply, put_flash(socket, :info, "URL copied!")}
-  end
-
-  def handle_event("room-clipboard-result", _params, socket) do
-    {:noreply, put_flash(socket, :error, "Could not access the clipboard")}
   end
 
   def handle_event("say", params, socket) do
@@ -155,16 +148,6 @@ defmodule HappenWeb.RoomLive do
               this.viewport?.addEventListener("scroll", this.syncViewport)
               this.syncViewport()
 
-              this.handleEvent("copy-room-invitation-url", ({url}) => {
-                if (!navigator.clipboard) {
-                  this.pushEvent("room-clipboard-result", {success: false})
-                  return
-                }
-
-                navigator.clipboard.writeText(url)
-                  .then(() => this.pushEvent("room-clipboard-result", {success: true}))
-                  .catch(() => this.pushEvent("room-clipboard-result", {success: false}))
-              })
             },
 
             updated() {

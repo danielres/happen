@@ -1,23 +1,26 @@
 defmodule HappenWeb.Components.ButtonInviteFriends do
-  use HappenWeb, :live_component
+  use HappenWeb, :connected_component
 
   alias Happen.Accounts
 
-  def update(assigns, socket) do
+  def on_mount(socket) do
     socket =
       socket
-      |> assign(assigns)
       |> assign_new(:active_invitations, fn -> [] end)
       |> assign_new(:invitation_url, fn -> nil end)
       |> assign_new(:share_form, fn -> share_form([]) end)
       |> assign_new(:sharing_room?, fn -> false end)
 
-    {:ok, socket}
+    {:ok, socket, fn -> :ok end}
+  end
+
+  def handle_update(assigns, socket) do
+    {:ok, assign(socket, assigns)}
   end
 
   def render(assigns) do
     ~H"""
-    <div id={@id}>
+    <div id={@id} {@connected_attrs} phx-hook=".InviteFriends">
       <div
         :if={@sharing_room?}
         class="flex justify-end"
@@ -51,6 +54,7 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
               type="button"
               phx-click="copy-room-invitation"
               phx-target={@myself}
+              phx-mounted={JS.focus()}
             >
               Copy link
             </.button>
@@ -97,6 +101,16 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
           <.icon name="hero-user-plus-micro" /> Invite friends
         </button>
       </div>
+
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".InviteFriends">
+        export default {
+          mounted() {
+            this.handleEvent("copy-room-invitation-url", ({url}) => {
+              navigator.clipboard?.writeText(url).catch(() => {})
+            })
+          }
+        }
+      </script>
     </div>
     """
   end
