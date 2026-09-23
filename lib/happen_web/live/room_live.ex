@@ -19,6 +19,7 @@ defmodule HappenWeb.RoomLive do
           |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
+          # |> assign(member: %{name: "foo", available?: true})
           |> assign(member_form: member_name_changeset(%{}) |> to_form(as: :member))
           |> assign(messages: [])
           |> assign(active_invitations: active_invitations)
@@ -137,8 +138,8 @@ defmodule HappenWeb.RoomLive do
       <Layouts.app flash={@flash}>
         <div
           id="room"
-          class="flex h-dvh min-h-0 flex-col overflow-hidden"
-          phx-hook=".CopyRoomInvitation"
+          class="fixed inset-x-0 top-0 flex h-dvh min-h-0 flex-col overflow-hidden"
+          phx-hook=".Room"
         >
           <header class="bg-base-300 flex shrink-0 items-end justify-between gap-4 p-4">
             <h1>
@@ -203,9 +204,23 @@ defmodule HappenWeb.RoomLive do
           </main>
         </div>
 
-        <script :type={Phoenix.LiveView.ColocatedHook} name=".CopyRoomInvitation">
+        <script :type={Phoenix.LiveView.ColocatedHook} name=".Room">
           export default {
             mounted() {
+              this.viewport = window.visualViewport
+              this.syncViewport = () => {
+                const height = this.viewport?.height ?? window.innerHeight
+                const offsetTop = this.viewport?.offsetTop ?? 0
+
+                this.el.style.height = `${height}px`
+                this.el.style.top = `${offsetTop}px`
+              }
+
+              window.addEventListener("resize", this.syncViewport)
+              this.viewport?.addEventListener("resize", this.syncViewport)
+              this.viewport?.addEventListener("scroll", this.syncViewport)
+              this.syncViewport()
+
               this.handleEvent("copy-room-invitation-url", ({url}) => {
                 if (!navigator.clipboard) {
                   this.pushEvent("room-clipboard-result", {success: false})
@@ -216,6 +231,16 @@ defmodule HappenWeb.RoomLive do
                   .then(() => this.pushEvent("room-clipboard-result", {success: true}))
                   .catch(() => this.pushEvent("room-clipboard-result", {success: false}))
               })
+            },
+
+            updated() {
+              this.syncViewport()
+            },
+
+            destroyed() {
+              window.removeEventListener("resize", this.syncViewport)
+              this.viewport?.removeEventListener("resize", this.syncViewport)
+              this.viewport?.removeEventListener("scroll", this.syncViewport)
             }
           }
         </script>

@@ -8,6 +8,7 @@ defmodule HappenWeb.Sections.Messages.Form do
       class="join grid shrink-0 grid-cols-[1fr_auto]"
       phx-hook=".ClearMessage"
       phx-submit="say"
+      phx-update="ignore"
     >
       <input
         id="message-input"
@@ -33,9 +34,10 @@ defmodule HappenWeb.Sections.Messages.Form do
     <script :type={Phoenix.LiveView.ColocatedHook} name=".ClearMessage">
       export default {
         mounted() {
+          this.input = this.el.elements.message
           this.handleEvent("message-sent", () => {
             this.el.reset()
-            this.el.elements.message.dispatchEvent(new Event("input"))
+            this.input.dispatchEvent(new Event("input"))
           })
         }
       }

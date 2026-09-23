@@ -19,20 +19,37 @@ defmodule HappenWeb.Sections.Messages.List do
     <script :type={Phoenix.LiveView.ColocatedHook} name=".AutoScroll">
       export default {
         mounted() {
+          this.followingLatest = true
+          this.updateFollowingLatest = () => {
+            this.followingLatest =
+              this.el.scrollHeight - this.el.scrollTop - this.el.clientHeight < 64
+          }
+          this.scheduleScrollToBottom = () => {
+            if (!this.followingLatest) return
+
+            cancelAnimationFrame(this.scrollFrame)
+            this.scrollFrame = requestAnimationFrame(() => this.scrollToBottom())
+          }
+
+          this.el.addEventListener("scroll", this.updateFollowingLatest, {passive: true})
+          this.resizeObserver = new ResizeObserver(this.scheduleScrollToBottom)
+          this.resizeObserver.observe(this.el)
           this.scrollToBottom()
         },
 
-        beforeUpdate() {
-          this.followingLatest =
-            this.el.scrollHeight - this.el.scrollTop - this.el.clientHeight < 64
+        updated() {
+          this.scheduleScrollToBottom()
         },
 
-        updated() {
-          if (this.followingLatest) this.scrollToBottom()
+        destroyed() {
+          cancelAnimationFrame(this.scrollFrame)
+          this.resizeObserver.disconnect()
+          this.el.removeEventListener("scroll", this.updateFollowingLatest)
         },
 
         scrollToBottom() {
           this.el.scrollTop = this.el.scrollHeight
+          this.followingLatest = true
         }
       }
     </script>

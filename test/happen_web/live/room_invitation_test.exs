@@ -17,6 +17,8 @@ defmodule HappenWeb.RoomInvitationTest do
     |> form("#member-join-form", member: %{name: "Jane"})
     |> render_submit()
 
+    assert has_element?(view, "#room.fixed[phx-hook]")
+
     view
     |> element("#invite-friends")
     |> render_click()
