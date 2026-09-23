@@ -88,38 +88,7 @@ defmodule HappenWeb.RoomLive do
           class="fixed inset-x-0 top-0 flex h-dvh min-h-0 flex-col overflow-hidden"
           phx-hook=".Room"
         >
-          <header class="bg-base-300 flex shrink-0 items-end justify-between gap-4 p-4">
-            <h1>
-              <div class="uppercase text-xs opacity-50">Room</div>
-              <div class="font-semibold opacity-60">{@room.name}</div>
-            </h1>
-
-            <HappenWeb.Components.Dropdown.render id="user-dropdown">
-              <:trigger class="cursor-pointer">
-                <HappenWeb.Components.Badge.render member={@member} />
-              </:trigger>
-
-              <:pane class="bg-base-200 p-4 dropdown-end w-40 flex justify-end">
-                <button
-                  phx-click="toggle"
-                  type="button"
-                  class="cursor-pointer text-xs text-right"
-                >
-                  <input
-                    type="checkbox"
-                    class="toggle toggle-success"
-                    checked={@member.available? && "checked"}
-                    class="toggle"
-                  />
-
-                  <div>
-                    <span :if={@member.available?} class="text-success">Available now</span>
-                    <span :if={!@member.available?} class="text-base-content/50">Not available now</span>
-                  </div>
-                </button>
-              </:pane>
-            </HappenWeb.Components.Dropdown.render>
-          </header>
+          <HappenWeb.Components.Header.render room={@room} member={@member} />
 
           <.live_component
             module={HappenWeb.Components.ButtonInviteFriends}

@@ -6,22 +6,37 @@ defmodule HappenWeb.Components.Header do
 
   def render(assigns) do
     ~H"""
-    <header class="bg-base-300 flex shrink-0 items-end justify-between gap-4 p-4">
-      <h1>
+    <header class="bg-base-300 flex shrink-0 items-end justify-between gap-4 px-4 py-2">
+      <h1 class="leading-none">
         <div class="uppercase text-xs opacity-50">Room</div>
         <div class="font-semibold opacity-60">{@room.name}</div>
       </h1>
 
-      <button
-        phx-click="toggle"
-        type="button"
-        class="flex items-baseline gap-2 cursor-pointer text-xs"
-      >
-        <span :if={@member.available?} class="text-success">Available now</span>
-        <span :if={!@member.available?} class="text-warning">Not available now</span>
+      <HappenWeb.Components.Dropdown.render id="user-dropdown">
+        <:trigger class="cursor-pointer">
+          <HappenWeb.Components.Badge.render member={@member} />
+        </:trigger>
 
-        <HappenWeb.Components.Badge.render member={@member} />
-      </button>
+        <:pane class="bg-base-200 p-4 dropdown-end w-40 flex justify-end">
+          <button
+            phx-click="toggle"
+            type="button"
+            class="cursor-pointer text-xs text-right"
+          >
+            <input
+              type="checkbox"
+              class="toggle toggle-success"
+              checked={@member.available? && "checked"}
+              class="toggle"
+            />
+
+            <div>
+              <span :if={@member.available?} class="text-success">Available now</span>
+              <span :if={!@member.available?} class="text-base-content/50">Not available now</span>
+            </div>
+          </button>
+        </:pane>
+      </HappenWeb.Components.Dropdown.render>
     </header>
     """
   end
