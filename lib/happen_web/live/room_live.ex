@@ -18,7 +18,7 @@ defmodule HappenWeb.RoomLive do
           |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
-          # |> assign(member: %{name: "foo", available?: true})
+          # |> assign(member: %{name: "foohahah", available?: false})
           |> assign(member_form: member_name_changeset(%{}) |> to_form(as: :member))
           |> assign(messages: [])
 
@@ -98,8 +98,8 @@ defmodule HappenWeb.RoomLive do
             room={@room}
           />
 
-          <main class="flex min-h-0 flex-1 flex-col gap-8 p-4">
-            <section class="shrink-0">
+          <main class="flex min-h-0 flex-1 flex-col gap-4">
+            <section class="shrink-0 p-4 pb-0">
               <h3 class="small-caps opacity-60">Online now</h3>
 
               <ul class="flex flew-wrap gap-2">
@@ -109,9 +109,10 @@ defmodule HappenWeb.RoomLive do
               </ul>
             </section>
 
-            <section class="flex min-h-0 flex-1 flex-col gap-2">
-              <h3 :if={@messages |> length() > 0} class="small-caps opacity-60">Messages</h3>
-              <HappenWeb.Sections.Messages.render messages={@messages} />
+            <section class="flex min-h-0 flex-1 flex-col gap-0">
+              <h3 :if={@messages |> length() > 0} class="small-caps opacity-60 px-4">Messages</h3>
+              <HappenWeb.Sections.Messages.List.render messages={@messages} />
+              <HappenWeb.Sections.Messages.Form.render />
             </section>
           </main>
         </div>

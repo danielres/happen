@@ -5,7 +5,7 @@ defmodule HappenWeb.Sections.Messages.Form do
     ~H"""
     <form
       id="message-form"
-      class="join grid shrink-0 grid-cols-[1fr_auto]"
+      class="join grid shrink-0 grid-cols-[1fr_auto] bg-base-300 p-4"
       phx-hook=".ClearMessage"
       phx-submit="say"
       phx-update="ignore"

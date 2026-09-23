@@ -7,12 +7,12 @@ defmodule HappenWeb.Sections.Messages.List do
     ~H"""
     <ul
       id="messages"
-      class="min-h-0 flex-1 space-y-1 overflow-y-auto"
+      class="min-h-0 flex-1 space-y-1 overflow-y-auto mb-4 px-4"
       phx-hook=".AutoScroll"
     >
-      <li :for={message <- @messages} class="bg-base-200 py-2 px-4">
-        <div class="text-sm opacity-50">{message.member.name}</div>
-        <div>{message.body}</div>
+      <li :for={message <- @messages} class="bg-base-200 py-3 px-4">
+        <div class="text-xs opacity-50">{message.member.name}</div>
+        <div class="text-sm">{message.body}</div>
       </li>
     </ul>
 
