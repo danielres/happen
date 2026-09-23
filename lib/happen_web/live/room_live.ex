@@ -94,15 +94,31 @@ defmodule HappenWeb.RoomLive do
               <div class="font-semibold opacity-60">{@room.name}</div>
             </h1>
 
-            <button
-              phx-click="toggle"
-              type="button"
-              class="flex items-baseline gap-2 cursor-pointer text-xs"
-            >
-              <span :if={@member.available?} class="text-success">Available now</span>
-              <span :if={!@member.available?} class="text-warning">Not available now</span>
-              <HappenWeb.Components.Badge.render member={@member} />
-            </button>
+            <HappenWeb.Components.Dropdown.render id="user-dropdown">
+              <:trigger class="cursor-pointer">
+                <HappenWeb.Components.Badge.render member={@member} />
+              </:trigger>
+
+              <:pane class="bg-base-200 p-4 dropdown-end w-40 flex justify-end">
+                <button
+                  phx-click="toggle"
+                  type="button"
+                  class="cursor-pointer text-xs text-right"
+                >
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-success"
+                    checked={@member.available? && "checked"}
+                    class="toggle"
+                  />
+
+                  <div>
+                    <span :if={@member.available?} class="text-success">Available now</span>
+                    <span :if={!@member.available?} class="text-base-content/50">Not available now</span>
+                  </div>
+                </button>
+              </:pane>
+            </HappenWeb.Components.Dropdown.render>
           </header>
 
           <.live_component
