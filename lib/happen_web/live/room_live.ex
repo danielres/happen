@@ -17,7 +17,7 @@ defmodule HappenWeb.RoomLive do
           |> assign(room: room)
           |> assign(members: [])
           |> assign(member: nil)
-          |> assign(member: %{name: "foo", available?: true})
+          # |> assign(member: %{name: "foo", available?: true})
           |> assign(member_form: member_name_changeset(%{}) |> to_form(as: :member))
           |> assign(messages: [])
 
@@ -55,7 +55,7 @@ defmodule HappenWeb.RoomLive do
   end
 
   def handle_event("room-clipboard-result", %{"success" => true}, socket) do
-    {:noreply, put_flash(socket, :info, "Room invitation URL copied")}
+    {:noreply, put_flash(socket, :info, "URL copied!")}
   end
 
   def handle_event("room-clipboard-result", _params, socket) do

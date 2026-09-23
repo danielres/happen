@@ -13,9 +13,7 @@ defmodule HappenWeb.RoomInvitationTest do
     conn = init_test_session(conn, %{"invitation_id" => invitation.id})
     {:ok, view, _html} = live(conn, ~p"/r/#{room.id}")
 
-    view
-    |> form("#member-join-form", member: %{name: "Jane"})
-    |> render_submit()
+    join_room_if_needed(view)
 
     assert has_element?(view, "#room.fixed[phx-hook]")
 
@@ -23,8 +21,26 @@ defmodule HappenWeb.RoomInvitationTest do
     |> element("#invite-friends")
     |> render_click()
 
+    assert has_element?(view, "#room-invitation-details")
+    assert has_element?(view, "#room-invitation-url")
+
+    view
+    |> element("#copy-room-invitation")
+    |> render_click()
+
     expected_url = "#{HappenWeb.Endpoint.url()}/invite/#{token}/r/#{room.id}"
     assert_push_event(view, "copy-room-invitation-url", %{url: ^expected_url})
+    refute has_element?(view, "#room-invitation-details")
+
+    view
+    |> element("#invite-friends")
+    |> render_click()
+
+    view
+    |> element("#cancel-room-invitation")
+    |> render_click()
+
+    refute has_element?(view, "#room-invitation-details")
   end
 
   test "an admin chooses an active invitation before copying a room URL", %{conn: conn} do
@@ -35,9 +51,7 @@ defmodule HappenWeb.RoomInvitationTest do
     conn = init_test_session(conn, %{"admin_id" => admin.id})
     {:ok, view, _html} = live(conn, ~p"/r/#{room.id}")
 
-    view
-    |> form("#member-join-form", member: %{name: "Jane"})
-    |> render_submit()
+    join_room_if_needed(view)
 
     view
     |> element("#invite-friends")
@@ -52,5 +66,13 @@ defmodule HappenWeb.RoomInvitationTest do
     expected_url = "#{HappenWeb.Endpoint.url()}/invite/#{token}/r/#{room.id}"
     assert_push_event(view, "copy-room-invitation-url", %{url: ^expected_url})
     refute has_element?(view, "#room-invitation-form")
+  end
+
+  defp join_room_if_needed(view) do
+    if has_element?(view, "#member-join-form") do
+      view
+      |> form("#member-join-form", member: %{name: "Jane"})
+      |> render_submit()
+    end
   end
 end

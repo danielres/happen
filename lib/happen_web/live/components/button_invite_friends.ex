@@ -8,6 +8,7 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
       socket
       |> assign(assigns)
       |> assign_new(:active_invitations, fn -> [] end)
+      |> assign_new(:invitation_url, fn -> nil end)
       |> assign_new(:share_form, fn -> share_form([]) end)
       |> assign_new(:sharing_room?, fn -> false end)
 
@@ -21,7 +22,43 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
         :if={@sharing_room?}
         class="flex justify-end"
       >
+        <div
+          :if={@access_kind == :invitation}
+          id="room-invitation-details"
+          class="grid max-w-2xl gap-3 bg-base-200 p-4"
+        >
+          <p class="opacity-75">Share link with your friends to invite them to this room.</p>
+          <p
+            id="room-invitation-url"
+            class="opacity-75 break-all rounded bg-base-300 p-2 font-mono text-sm"
+          >
+            {@invitation_url}
+          </p>
+
+          <div class="flex justify-end gap-2">
+            <.button
+              id="cancel-room-invitation"
+              type="button"
+              phx-click="cancel-room-invitation"
+              phx-target={@myself}
+            >
+              Cancel
+            </.button>
+
+            <.button
+              id="copy-room-invitation"
+              class="btn btn-primary"
+              type="button"
+              phx-click="copy-room-invitation"
+              phx-target={@myself}
+            >
+              Copy link
+            </.button>
+          </div>
+        </div>
+
         <.form
+          :if={@access_kind == :admin}
           class="max-w-2xl bg-base-200 p-4"
           for={@share_form}
           id="room-invitation-form"
@@ -34,8 +71,13 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
             options={Enum.map(@active_invitations, &{&1.shared_with, &1.id})}
             type="select"
           />
-          <.button type="submit">Copy link</.button>
-          <.button type="button" phx-click="cancel-room-invitation" phx-target={@myself}>
+          <.button id="copy-room-invitation" type="submit">Copy link</.button>
+          <.button
+            id="cancel-room-invitation"
+            type="button"
+            phx-click="cancel-room-invitation"
+            phx-target={@myself}
+          >
             Cancel
           </.button>
         </.form>
@@ -61,13 +103,27 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
 
   def handle_event("invite-friends", _params, %{assigns: %{access_kind: :invitation}} = socket) do
     case Accounts.get_enabled_invitation(socket.assigns.current_invitation.id) do
-      {:ok, invitation} -> copy_room_invitation(socket, invitation)
+      {:ok, invitation} -> show_room_invitation(socket, invitation)
       {:error, _error} -> {:noreply, push_navigate(socket, to: ~p"/404")}
     end
   end
 
   def handle_event("cancel-room-invitation", _params, socket) do
-    {:noreply, assign(socket, :sharing_room?, false)}
+    {:noreply, hide_room_invitation(socket)}
+  end
+
+  def handle_event(
+        "copy-room-invitation",
+        _params,
+        %{assigns: %{access_kind: :invitation, invitation_url: invitation_url}} = socket
+      )
+      when is_binary(invitation_url) do
+    socket =
+      socket
+      |> hide_room_invitation()
+      |> push_event("copy-room-invitation-url", %{url: invitation_url})
+
+    {:noreply, socket}
   end
 
   def handle_event(
@@ -116,11 +172,34 @@ defmodule HappenWeb.Components.ButtonInviteFriends do
   defp copy_room_invitation(socket, invitation) do
     case Accounts.invitation_token(invitation) do
       {:ok, token} ->
-        url = "#{HappenWeb.Endpoint.url()}/invite/#{token}/r/#{socket.assigns.room.id}"
+        url = room_invitation_url(socket, token)
         {:noreply, push_event(socket, "copy-room-invitation-url", %{url: url})}
 
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Could not copy room invitation URL")}
     end
+  end
+
+  defp show_room_invitation(socket, invitation) do
+    case Accounts.invitation_token(invitation) do
+      {:ok, token} ->
+        {:noreply,
+         socket
+         |> assign(:invitation_url, room_invitation_url(socket, token))
+         |> assign(:sharing_room?, true)}
+
+      {:error, _error} ->
+        {:noreply, put_flash(socket, :error, "Could not show room invitation URL")}
+    end
+  end
+
+  defp hide_room_invitation(socket) do
+    socket
+    |> assign(:invitation_url, nil)
+    |> assign(:sharing_room?, false)
+  end
+
+  defp room_invitation_url(socket, token) do
+    "#{HappenWeb.Endpoint.url()}/invite/#{token}/r/#{socket.assigns.room.id}"
   end
 end
