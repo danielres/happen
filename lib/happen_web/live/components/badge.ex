@@ -8,7 +8,7 @@ defmodule HappenWeb.Components.Badge do
     <span class={[
       "badge ",
       @member.available? && "bg-success",
-      !@member.available? && "bg-warning"
+      !@member.available? && "opacity-50"
     ]}>
       {@member.name}
     </span>
