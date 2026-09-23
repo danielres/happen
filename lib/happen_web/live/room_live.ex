@@ -204,6 +204,6 @@ defmodule HappenWeb.RoomLive do
     |> Ecto.Changeset.cast(params, [:name])
     |> Ecto.Changeset.validate_required([:name])
     |> Ecto.Changeset.validate_length(:name, min: 3, message: "min %{count} chars")
-    |> Ecto.Changeset.validate_length(:name, max: 12, message: "max %{count} chars")
+    |> Ecto.Changeset.validate_length(:name, max: 8, message: "max %{count} chars")
   end
 end
