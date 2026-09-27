@@ -63,7 +63,7 @@ defmodule HappenWeb.ExperimentsLive do
               <div class="grid gap-2">
                 <Ideas.render_form :if={@ideas.form} form={@ideas.form} />
                 <Ideas.render_tools :if={@ideas.tools?} />
-                <Ideas.render_list stream={@streams.ideas} user_id={@user.data.id} />
+                <Ideas.render stream={@streams.ideas} user_id={@user.data.id} />
               </div>
             </.section>
           </div>
