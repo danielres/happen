@@ -8,6 +8,7 @@ defmodule HappenWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug HappenWeb.Plugs.GuestId
     plug :fetch_live_flash
     plug :put_root_layout, html: {HappenWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -40,6 +41,11 @@ defmodule HappenWeb.Router do
 
   scope "/", HappenWeb do
     pipe_through :browser
+
+    live "/ex", ExperimentsLiveHome
+    live "/ex/:room_name", ExperimentsLive
+    post "/guest", GuestSessionController, :create
+    get "/guest/logout", GuestSessionController, :delete
 
     live_session :invitation_access,
       on_mount: [{HappenWeb.LiveAccess, :require}] do

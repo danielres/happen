@@ -24,13 +24,17 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import { hooks as colocatedHooks } from "phoenix-colocated/happen"
 import topbar from "../vendor/topbar"
+import { AutoAnimate } from "./hooks/AutoAnimate"
 import { CapitalizeFirstLetter } from "./hooks/CapitalizeFirstLetter";
+
+import initLiveStash from "../../deps/live_stash/assets/js/live-stash.js";
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
+  params: initLiveStash({ _csrf_token: csrfToken }),
   longPollFallbackMs: 2500,
-  params: { _csrf_token: csrfToken },
   hooks: {
+    AutoAnimate,
     CapitalizeFirstLetter,
     ...colocatedHooks,
   },
@@ -84,4 +88,3 @@ if (process.env.NODE_ENV === "development") {
     window.liveReloader = reloader
   })
 }
-

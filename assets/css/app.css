@@ -108,3 +108,13 @@
 .small-caps {
   font-variant-caps: small-caps;
 }
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-out {
+  animation: fade-out var(--message-ttl) ease-out forwards;
+}
+
