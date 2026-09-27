@@ -51,11 +51,13 @@ defmodule HappenWeb.ExperimentsLive.User do
     ~H"""
     <span
       data-testid={assigns[:"data-testid"]}
-      class="badge"
-      style={"background: oklch(50% 0.15 #{@user.hue})"}
+      class="badge px-1"
+      style={"background: #{color(@user)}"}
     >
       {@user.name}
     </span>
     """
   end
+
+  defp color(user), do: "oklch(50% 0.15 #{user.hue})"
 end
