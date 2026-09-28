@@ -5,8 +5,13 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
 
   def render(assigns) do
     ~H"""
-    <div class="flex justify-between gap-4 items-baseline">
-      {@room.name}
+    <div class={[
+      "flex justify-between gap-4 items-center",
+      "bg-base-200 p-4 rounded-lg grow"
+    ]}>
+      <div class="font-bold opacity-50 truncate">
+        {@room.name}
+      </div>
 
       <HappenWeb.Components.Dropdown.render id="user-dropdown">
         <:trigger class="cursor-pointer">

@@ -51,10 +51,10 @@ defmodule HappenWeb.ExperimentsLive.User do
     ~H"""
     <span
       data-testid={assigns[:"data-testid"]}
-      class="badge px-1"
+      class="badge rounded-full"
       style={"background: #{color(@user)}"}
     >
-      {@user.name}
+      <span class="opacity-75">{@user.name}</span>
     </span>
     """
   end

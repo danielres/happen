@@ -7,21 +7,31 @@ defmodule HappenWeb.ExperimentsLive do
   alias HappenWeb.ExperimentsLive.Presences
   alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.User
+  alias HappenWeb.Components.Tabs
 
   delegate(:user, User)
   delegate(:messages, Messages)
   delegate(:presences, Presences, info: [:group])
   delegate(:ideas, Ideas)
 
+  @impl Phoenix.LiveView
   def mount(params, session, socket) do
     socket =
       socket
       |> assign(room: %{data: %{name: params["room_name"]}})
+      |> assign(active_tab: "ideas")
       |> delegate_mount(params, session)
 
     {:ok, socket}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("tabs:select", %{"tab" => tab}, socket)
+      when tab in ["ideas", "messages", "presences"] do
+    {:noreply, socket |> assign(:active_tab, tab)}
+  end
+
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <Layouts.app :if={!@user.data} mode="centered" flash={@flash}>
@@ -31,24 +41,19 @@ defmodule HappenWeb.ExperimentsLive do
     </Layouts.app>
 
     <Layouts.app :if={@user.data} flash={@flash}>
-      <div>
-        <header class={["bg-base-300 px-4 py-4"]}>
+      <div class="max-w-md mx-auto space-y-4 mt-4">
+        <header>
           <Components.Header.render user={@user.data} room={@room.data} />
         </header>
 
-        <main class={[
-          "grid gap-6 sm:gap-12",
-          "sm:grid-cols-2 max-w-[40ch] sm:max-w-[80ch] mx-auto",
-          "px-4 py-8"
-        ]}>
-          <div class={[
-            "grid gap-6 sm:gap-12"
-          ]}>
-            <.section>
-              <:title>Online now</:title>
-              <Presences.render presences={@presences} />
-            </.section>
-
+        <Tabs.render>
+          <Tabs.tab
+            active?={@active_tab == "ideas"}
+            name="main"
+            phx-click="tabs:select"
+            phx-value-tab="ideas"
+          >
+            <:label><.icon name="hero-light-bulb-micro" /></:label>
             <.section>
               <:title>
                 <div class="flex justify-between gap-4 items-end">
@@ -64,13 +69,34 @@ defmodule HappenWeb.ExperimentsLive do
                 <Ideas.render stream={@streams.ideas} user_id={@user.data.id} />
               </div>
             </.section>
-          </div>
+          </Tabs.tab>
 
-          <.section>
-            <:title>Ephemeral chit-chat</:title>
-            <Messages.render messages={@messages} stream={@streams.messages} />
-          </.section>
-        </main>
+          <Tabs.tab
+            active?={@active_tab == "messages"}
+            name="main"
+            phx-click="tabs:select"
+            phx-value-tab="messages"
+          >
+            <:label><.icon name="hero-chat-bubble-left-micro" /></:label>
+            <.section>
+              <:title>Ephemeral chit-chat</:title>
+              <Messages.render messages={@messages} stream={@streams.messages} />
+            </.section>
+          </Tabs.tab>
+
+          <Tabs.tab
+            active?={@active_tab == "presences"}
+            name="main"
+            phx-click="tabs:select"
+            phx-value-tab="presences"
+          >
+            <:label><.icon name="hero-wifi-micro" /></:label>
+            <.section>
+              <:title>Online now</:title>
+              <Presences.render presences={@presences} />
+            </.section>
+          </Tabs.tab>
+        </Tabs.render>
       </div>
     </Layouts.app>
     """
@@ -81,7 +107,7 @@ defmodule HappenWeb.ExperimentsLive do
   defp section(assigns) do
     ~H"""
     <section class="space-y-2">
-      <h3 :if={@title != []} class="small-caps tracking-wider opacity-75">
+      <h3 :if={@title != []} class="small-caps tracking-wider font-bold">
         {render_slot(@title)}
       </h3>
 
