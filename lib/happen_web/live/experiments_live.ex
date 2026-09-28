@@ -8,7 +8,7 @@ defmodule HappenWeb.ExperimentsLive do
   alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.User
 
-  delegate(:user, User, events: false, info: false)
+  delegate(:user, User)
   delegate(:messages, Messages)
   delegate(:presences, Presences, info: [:group])
   delegate(:ideas, Ideas)
