@@ -62,13 +62,15 @@ defmodule HappenWeb.ExperimentsLive do
               <:title>
                 <div class="flex justify-between gap-4 items-end">
                   <div class="grow">Ideas</div>
-                  <Ideas.button_tools :if={!@ideas[:form]} active?={@ideas.tools != nil} />
-                  <Ideas.button_add :if={!@ideas[:form]} />
+
+                  <div class="h-0 flex items-end mr-1">
+                    <Ideas.button_tools active?={@ideas.tools != nil} />
+                  </div>
                 </div>
               </:title>
 
               <div class="grid gap-2">
-                <Ideas.render_form :if={@ideas.form} form={@ideas.form} />
+                <Ideas.render_form :if={is_nil(@ideas.tools)} form={@ideas.form} />
                 <Ideas.render_tools :if={@ideas.tools} tools={@ideas.tools} />
                 <Ideas.render stream={@streams.ideas} user_id={@user.data.id} />
               </div>

@@ -33,7 +33,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
     <button
       data-testid={delegate_dom_id("button")}
       class={[
-        "btn btn-xs btn-circle",
+        "btn btn-sm btn-circle",
         !@active? && "opacity-50 hover:opacity-100 transition",
         @active? && "btn-warning"
       ]}

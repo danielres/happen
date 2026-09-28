@@ -12,6 +12,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   def on_mount(params, session, socket) do
     socket
     |> delegate_assign(%{form: nil})
+    |> assign_form("")
     |> delegate_mount(params, session)
     |> assign_stream()
     |> subscribe()
@@ -38,15 +39,6 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     stream(socket, :ideas, ideas, reset: true)
   end
 
-  def handle_event("add_start", _params, socket) do
-    socket =
-      socket
-      |> assign_form()
-      |> delegate_assign(:tools, nil)
-
-    {:noreply, socket}
-  end
-
   def handle_event("add", %{"body" => body}, socket) do
     room_name = socket.assigns.room.data.name
     user = socket.assigns.user.data
@@ -57,7 +49,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   end
 
   def handle_event("add_cancel", _params, socket) do
-    {:noreply, socket |> delegate_assign(:form, nil)}
+    {:noreply, socket |> assign_form()}
   end
 
   def handle_event("change", %{"body" => body}, socket) do
@@ -96,19 +88,6 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   def button_tools(assigns), do: Tools.button(assigns)
   def render_tools(assigns), do: Tools.render(assigns)
   def render_form(assigns), do: Components.Form.render(assigns)
-
-  def button_add(assigns) do
-    ~H"""
-    <button
-      data-testid={delegate_dom_id("add")}
-      class="btn btn-sm btn-info btn-circle"
-      phx-click={delegate_event("add_start")}
-      type="button"
-    >
-      <.icon name="hero-plus-micro" />
-    </button>
-    """
-  end
 
   attr :stream, :list, required: true
   attr :user_id, :string, required: true
