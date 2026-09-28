@@ -1,7 +1,9 @@
 defmodule HappenWeb.ExperimentsLive.Components.Header do
   use HappenWeb, :html
 
+  alias HappenWeb.Components.Dropdown
   alias HappenWeb.ExperimentsLive.Presences
+  alias HappenWeb.ExperimentsLive.User
 
   def render(assigns) do
     ~H"""
@@ -13,9 +15,9 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
         {@room.name}
       </div>
 
-      <HappenWeb.Components.Dropdown.render id="user-dropdown">
+      <Dropdown.render id="user-dropdown">
         <:trigger class="cursor-pointer opacity-90 hover:opacity-100 transition">
-          <HappenWeb.ExperimentsLive.User.badge data-testid="current-user-badge" user={@user} />
+          <User.badge data-testid="current-user-badge" user={@user} />
         </:trigger>
 
         <:pane class="bg-base-200 dropdown-end rounded-box">
@@ -25,7 +27,7 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
             </li>
           </ul>
         </:pane>
-      </HappenWeb.Components.Dropdown.render>
+      </Dropdown.render>
     </div>
     """
   end
