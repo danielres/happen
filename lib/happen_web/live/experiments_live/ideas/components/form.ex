@@ -25,7 +25,6 @@ def render(assigns) do
           placeholder="Suggest an idea"
           required
           class="grow"
-          phx-mounted={JS.focus()}
         />
         <button class="btn btn-square btn-info btn-soft h-full">
           <.icon name="hero-check-micro" />

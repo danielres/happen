@@ -74,7 +74,6 @@ defmodule HappenWeb.ExperimentsLive.Messages do
           field={@messages.form[:body]}
           placeholder="Say something"
           required
-          phx-mounted={JS.focus()}
           class="input input-info w-full"
         />
       </.form>
