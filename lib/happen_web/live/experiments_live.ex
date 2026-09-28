@@ -81,7 +81,7 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="messages"
           >
-            <:label><.icon name="hero-chat-bubble-left-micro" class="size-5" /></:label>
+            <:label><.icon name="hero-chat-bubble-left-right-mini" class="size-5" /></:label>
             <:indicator>
               <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
             </:indicator>
