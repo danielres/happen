@@ -2,7 +2,7 @@ defmodule HappenWeb.ExperimentsLive.Messages.Store do
   use GenServer
 
   def max_count, do: 15
-  def ttl, do: 60
+  def ttl, do: 180
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
