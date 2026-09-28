@@ -11,7 +11,8 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     |> assign(
       ideas: %{
         form: nil,
-        tools?: true
+        # tools: nil,
+        tools: :start
       }
     )
     |> assign_stream()
@@ -40,13 +41,30 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   end
 
   def handle_event("tools_toggle", _params, socket) do
-    tools? = socket.assigns.ideas.tools?
-    socket = socket |> update(:ideas, &Map.put(&1, :tools?, !tools?))
+    tools_active? = socket.assigns.ideas.tools != nil
+    tools = if tools_active?, do: nil, else: :start
+    socket = socket |> update(:ideas, &Map.put(&1, :tools, tools))
+    {:noreply, socket}
+  end
+
+  def handle_event("tools_reset_all_votes_start", _params, socket) do
+    socket = socket |> update(:ideas, &Map.put(&1, :tools, :reset_all_votes))
+    {:noreply, socket}
+  end
+
+  def handle_event("tools_remove_unpopular_ideas_start", _params, socket) do
+    socket = socket |> update(:ideas, &Map.put(&1, :tools, :remove_unpopular_ideas))
+    {:noreply, socket}
+  end
+
+  def handle_event("tools_remove_all_ideas_start", _params, socket) do
+    socket = socket |> update(:ideas, &Map.put(&1, :tools, :remove_all_ideas))
     {:noreply, socket}
   end
 
   def handle_event("add_start", _params, socket) do
     socket = socket |> assign_form()
+    socket = socket |> update(:ideas, &Map.put(&1, :tools, nil))
     {:noreply, socket}
   end
 
