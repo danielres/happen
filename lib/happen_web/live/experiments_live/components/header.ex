@@ -6,15 +6,15 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
   def render(assigns) do
     ~H"""
     <div class={[
-      "flex justify-between gap-4 items-center",
-      "bg-base-200 p-4 rounded-lg grow"
+      "flex justify-between gap-4 items-end",
+      "bg-base-200 px-4 py-3 rounded-lg grow"
     ]}>
-      <div class="font-bold opacity-50 truncate">
+      <div class="font-bold opacity-40 truncate text-sm max-w-2/3">
         {@room.name}
       </div>
 
       <HappenWeb.Components.Dropdown.render id="user-dropdown">
-        <:trigger class="cursor-pointer">
+        <:trigger class="cursor-pointer opacity-90 hover:opacity-100 transition">
           <HappenWeb.ExperimentsLive.User.badge data-testid="current-user-badge" user={@user} />
         </:trigger>
 
