@@ -123,23 +123,23 @@ defmodule HappenWeb.ExperimentsLiveTest do
     |> render_submit()
 
     assert has_element?(view, "[data-testid='ideas-list'] > [data-testid^='idea-']")
-    assert has_element?(view, "[data-testid^='idea-upvote-'][aria-pressed='false']")
+    assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='false']")
 
     view
-    |> element("[data-testid^='idea-upvote-']")
+    |> element("[data-testid^='ideas-upvote-']")
     |> render_click()
 
-    assert has_element?(view, "[data-testid^='idea-upvote-'][aria-pressed='true']")
+    assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='true']")
     assert has_element?(view, "[data-testid^='idea-upvoters-']")
     assert has_element?(view, "[data-testid^='idea-downvoters-']")
     assert has_element?(view, "[data-testid^='idea-upvoter-']")
     refute has_element?(view, "[data-testid^='idea-downvoter-']")
 
     view
-    |> element("[data-testid^='idea-upvote-']")
+    |> element("[data-testid^='ideas-upvote-']")
     |> render_click()
 
-    assert has_element?(view, "[data-testid^='idea-upvote-'][aria-pressed='false']")
+    assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='false']")
   end
 
   test "sorts ideas by score", %{conn: conn} do

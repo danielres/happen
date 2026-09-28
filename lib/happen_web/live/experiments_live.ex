@@ -41,7 +41,7 @@ defmodule HappenWeb.ExperimentsLive do
     </Layouts.app>
 
     <Layouts.app :if={@user.data} flash={@flash}>
-      <div class="max-w-md mx-auto space-y-4 mt-4">
+      <div class="max-w-md mx-auto space-y-2 px-4 py-2">
         <header>
           <Components.Header.render user={@user.data} room={@room.data} />
         </header>
@@ -53,7 +53,7 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="ideas"
           >
-            <:label><.icon name="hero-light-bulb-micro" class="size-5" /></:label>
+            <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
             <:indicator>
               <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
             </:indicator>

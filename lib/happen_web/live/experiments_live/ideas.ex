@@ -106,15 +106,23 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
         id={id}
         data-testid={"idea-#{idea.id}"}
         class={[
-          "rounded-box",
-          "bg-base-200/50",
-          "border-2 border-base-300",
-          "hover:border-base-content/25 transition",
-          "grid grid-cols-[1fr_auto]"
+          "grid grid-cols-[1fr_auto] gap-0"
         ]}
       >
-        <Components.Idea.render idea={idea} />
-        <Components.VotingButtons.render idea={idea} user_id={@user_id} />
+        <div class={[
+          "rounded-l-box",
+          "bg-base-200",
+          "grid grid-cols-[1fr_auto]"
+        ]}>
+          <Components.Idea.render idea={idea} />
+        </div>
+        <div class={[
+          "rounded-r-box",
+          "bg-base-300/80",
+          "grid grid-cols-[1fr_auto]"
+        ]}>
+          <Components.VotingButtons.render idea={idea} user_id={@user_id} />
+        </div>
       </li>
     </ul>
     """

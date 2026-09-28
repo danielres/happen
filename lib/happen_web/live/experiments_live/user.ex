@@ -5,7 +5,7 @@ defmodule HappenWeb.ExperimentsLive.User do
     user =
       case session do
         %{"guest_id" => guest_id, "guest_name" => name, "guest_since" => since} ->
-          %{id: guest_id, name: name, hue: 240, since: since}
+          %{id: guest_id, name: name, hue: 140, since: since}
 
         _ ->
           nil
@@ -54,10 +54,10 @@ defmodule HappenWeb.ExperimentsLive.User do
       class="badge rounded-full"
       style={"background: #{color(@user)}"}
     >
-      <span class="opacity-75">{@user.name}</span>
+      <span class="text-xs font-semibold opacity-60">{@user.name}</span>
     </span>
     """
   end
 
-  defp color(user), do: "oklch(50% 0.15 #{user.hue})"
+  defp color(user), do: "oklch(50% 0.09 #{user.hue})"
 end

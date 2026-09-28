@@ -23,6 +23,15 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Components.Idea do
         "px-4 py-3"
       ]}>
         <div class="text-sm">{@idea.body}</div>
+        <div :if={Utils.has_votes?(@idea)} class="absolute right-2 top-0">
+          <.icon
+            name="hero-ellipsis-horizontal-micro"
+            class={[
+              "opacity-30 transition",
+              "group-hover:opacity-100"
+            ]}
+          />
+        </div>
       </div>
 
       <div
@@ -39,16 +48,6 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Components.Idea do
 
           <Components.VotersList.render idea={@idea} direction={:down} />
         </div>
-      </div>
-
-      <div :if={Utils.has_votes?(@idea)} class="absolute right-1 bottom-0">
-        <.icon
-          name="hero-ellipsis-horizontal-micro"
-          class={[
-            "opacity-20 transition",
-            "group-hover:opacity-100"
-          ]}
-        />
       </div>
     </label>
     """
