@@ -53,7 +53,11 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="ideas"
           >
-            <:label><.icon name="hero-light-bulb-micro" /></:label>
+            <:label><.icon name="hero-light-bulb-micro" class="size-5" /></:label>
+            <:indicator>
+              <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
+            </:indicator>
+
             <.section>
               <:title>
                 <div class="flex justify-between gap-4 items-end">
@@ -77,7 +81,10 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="messages"
           >
-            <:label><.icon name="hero-chat-bubble-left-micro" /></:label>
+            <:label><.icon name="hero-chat-bubble-left-micro" class="size-5" /></:label>
+            <:indicator>
+              <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
+            </:indicator>
             <.section>
               <:title>Ephemeral chit-chat</:title>
               <Messages.render messages={@messages} stream={@streams.messages} />
@@ -90,7 +97,8 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="presences"
           >
-            <:label><.icon name="hero-wifi-micro" /></:label>
+            <:label><.icon name="hero-users-solid" class="size-5" /></:label>
+            <:indicator><span class="opacity-60">88</span></:indicator>
             <.section>
               <:title>Online now</:title>
               <Presences.render presences={@presences} />

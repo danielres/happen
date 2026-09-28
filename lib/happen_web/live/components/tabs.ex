@@ -15,6 +15,7 @@ defmodule HappenWeb.Components.Tabs do
   attr :name, :string, required: true
   attr :rest, :global
 
+  slot :indicator
   slot :label, required: true
   slot :inner_block, required: true
 
@@ -22,13 +23,24 @@ defmodule HappenWeb.Components.Tabs do
     ~H"""
     <label class={[
       "tab rounded-lg mr-2",
-      "bg-base-200 has-[input:checked]:bg-base-300"
+      "bg-base-200 has-[input:checked]:bg-base-300",
+      "relative"
     ]}>
       <input checked={@active?} name={@name} type="radio" {@rest} />
-      {render_slot(@label)}
+      <div>{render_slot(@label)}</div>
+      <div
+        :if={@indicator != []}
+        class={[
+          "text-xs",
+          "absolute",
+          "top-0.5 right-1"
+        ]}
+      >
+        {render_slot(@indicator)}
+      </div>
     </label>
 
-    <div class={["tab-content pt-4"]}>
+    <div class={["tab-content pt-6"]}>
       {render_slot(@inner_block)}
     </div>
     """
