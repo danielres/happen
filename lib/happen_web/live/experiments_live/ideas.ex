@@ -11,7 +11,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
 
   def on_mount(params, session, socket) do
     socket
-    |> delegate_assign(%{form: nil})
+    |> delegate_assign(%{count: 0, form: nil})
     |> assign_form("")
     |> delegate_mount(params, session)
     |> assign_stream()
@@ -36,7 +36,9 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
         :desc
       )
 
-    stream(socket, :ideas, ideas, reset: true)
+    socket
+    |> delegate_assign(:count, length(ideas))
+    |> stream(:ideas, ideas, reset: true)
   end
 
   def handle_event("add", %{"body" => body}, socket) do

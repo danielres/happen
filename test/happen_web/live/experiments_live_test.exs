@@ -158,6 +158,8 @@ defmodule HappenWeb.ExperimentsLiveTest do
     first_idea = IdeasStore.add_idea(room_name, author, "First idea")
     second_idea = IdeasStore.add_idea(room_name, author, "Second idea")
 
+    assert has_element?(view, "[data-testid='ideas-count']", "2")
+
     assert has_element?(
              view,
              "[data-testid='ideas-list'] > [data-testid='idea-#{second_idea.id}']:first-child"

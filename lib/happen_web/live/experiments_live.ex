@@ -55,7 +55,7 @@ defmodule HappenWeb.ExperimentsLive do
           >
             <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
             <:indicator>
-              <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
+              <span data-testid="ideas-count" class="opacity-60">{@ideas.count}</span>
             </:indicator>
 
             <.section>
@@ -84,9 +84,7 @@ defmodule HappenWeb.ExperimentsLive do
             phx-value-tab="messages"
           >
             <:label><.icon name="hero-chat-bubble-left-right-mini" class="size-5" /></:label>
-            <:indicator>
-              <span class="status status-sm animate-ping opacity-60 status-info mr-1" />
-            </:indicator>
+            <:indicator><span class="opacity-60">88</span></:indicator>
             <.section>
               <:title>Ephemeral chit-chat</:title>
               <Messages.render messages={@messages} stream={@streams.messages} />
