@@ -8,7 +8,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
 
   def on_mount(_params, _session, socket) do
     socket
-    |> delegate_assign(%{ttl: Store.ttl()})
+    |> delegate_assign(%{count: 0, ttl: Store.ttl()})
     |> assign_form()
     |> assign_stream()
     |> subscribe()
@@ -17,7 +17,16 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   defp assign_stream(socket) do
     room_name = socket.assigns.room.data.name
     messages = Store.list_messages(room_name) |> Enum.reverse()
-    socket |> stream(:messages, messages)
+
+    socket
+    |> delegate_assign(:count, messages |> length())
+    |> stream(:messages, messages)
+  end
+
+  defp assign_count(socket) do
+    room_name = socket.assigns.room.data.name
+    count = room_name |> Store.list_messages() |> length()
+    socket |> delegate_assign(:count, count)
   end
 
   defp assign_form(socket, body \\ "") do
@@ -42,11 +51,21 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   end
 
   def handle_info({:added, message}, socket) do
-    {:noreply, socket |> stream_insert(message)}
+    socket =
+      socket
+      |> stream_insert(message)
+      |> assign_count()
+
+    {:noreply, socket}
   end
 
   def handle_info({:deleted, message_id}, socket) do
-    {:noreply, socket |> stream_delete_by_id(message_id)}
+    socket =
+      socket
+      |> stream_delete_by_id(message_id)
+      |> assign_count()
+
+    {:noreply, socket}
   end
 
   defp stream_insert(socket, message) do

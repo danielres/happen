@@ -25,6 +25,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
     |> form("#messages-body-form", %{"body" => "Hello"})
     |> render_submit()
 
+    assert has_element?(view, "[data-testid='messages-count']", "1")
     assert has_element?(view, "#messages > li")
     assert has_element?(view, "#messages-body-form input[value='']")
   end

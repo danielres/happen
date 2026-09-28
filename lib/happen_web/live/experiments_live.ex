@@ -84,7 +84,9 @@ defmodule HappenWeb.ExperimentsLive do
             phx-value-tab="messages"
           >
             <:label><.icon name="hero-chat-bubble-left-right-mini" class="size-5" /></:label>
-            <:indicator><span class="opacity-60">88</span></:indicator>
+            <:indicator>
+              <span data-testid="messages-count" class="opacity-60">{@messages.count}</span>
+            </:indicator>
             <.section>
               <:title>Ephemeral chit-chat</:title>
               <Messages.render messages={@messages} stream={@streams.messages} />
