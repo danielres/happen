@@ -8,18 +8,16 @@ defmodule HappenWeb.ExperimentsLive do
   alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.User
 
+  delegate(:user, User, events: false, info: false)
   delegate(:messages, Messages)
-  delegate(:ideas, Ideas)
   delegate(:presences, Presences, info: [:group])
+  delegate(:ideas, Ideas)
 
   def mount(params, session, socket) do
     socket =
       socket
       |> assign(room: %{data: %{name: params["room_name"]}})
-      |> then(&User.on_mount(params, session, &1))
-      |> then(&Messages.on_mount(params, session, &1))
-      |> then(&Presences.on_mount(params, session, &1))
-      |> then(&Ideas.on_mount(params, session, &1))
+      |> delegate_mount(params, session)
 
     {:ok, socket}
   end

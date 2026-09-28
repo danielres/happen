@@ -10,6 +10,9 @@ defmodule LiveDelegate do
   `delegate_assign/3`, `delegate_dom_id/1`, and `delegate_event/1`:
 
       use LiveDelegate, path: [:ideas, :tools]
+
+  Delegates are mounted in declaration order. Mounting is enabled by default
+  and can be disabled with `mount: false`.
   """
 
   defmacro __using__(opts) do
@@ -75,6 +78,11 @@ defmodule LiveDelegate do
   defmacro delegate(name, module_ast, opts \\ []) when is_atom(name) do
     module = Macro.expand(module_ast, __CALLER__)
     events? = Keyword.get(opts, :events, true)
+    mount? = Keyword.get(opts, :mount, true)
+
+    unless is_boolean(mount?) do
+      raise ArgumentError, "LiveDelegate mount option must be a boolean"
+    end
 
     info_tags =
       case Keyword.get(opts, :info, [name]) do
@@ -86,9 +94,10 @@ defmodule LiveDelegate do
             name: name,
             module: module,
             events?: events?,
+            mount?: mount?,
             info_tags: info_tags
           ] do
-      @live_delegates {name, module, events?, info_tags}
+      @live_delegates {name, module, mount?, events?, info_tags}
     end
   end
 
@@ -102,21 +111,42 @@ defmodule LiveDelegate do
       quote do
       end
     else
+      mount_modules =
+        for {_name, module, true, _events?, _info_tags} <- delegates do
+          module
+        end
+
       event_modules =
-        for {name, module, true, _info_tags} <- delegates, into: %{} do
+        for {name, module, _mount?, true, _info_tags} <- delegates, into: %{} do
           {Atom.to_string(name), module}
         end
 
       info_modules =
-        for {_name, module, _events?, info_tags} <- delegates,
+        for {_name, module, _mount?, _events?, info_tags} <- delegates,
             info_tag <- info_tags,
             into: %{} do
           {info_tag, module}
         end
 
+      mount_function =
+        if mount_modules == [] do
+          quote do
+          end
+        else
+          quote do
+            defp delegate_mount(socket, params, session) do
+              Enum.reduce(unquote(mount_modules), socket, fn module, socket ->
+                module.on_mount(params, session, socket)
+              end)
+            end
+          end
+        end
+
       quote do
         @live_delegate_event_modules unquote(Macro.escape(event_modules))
         @live_delegate_info_modules unquote(Macro.escape(info_modules))
+
+        unquote(mount_function)
 
         @impl Phoenix.LiveView
         def handle_event(event, payload, socket) do

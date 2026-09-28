@@ -3,6 +3,7 @@ defmodule LiveDelegateTest do
 
   alias Happen.LiveDelegateTest.BareHandler
   alias Happen.LiveDelegateTest.Dispatcher
+  alias Happen.LiveDelegateTest.MountDispatcher
   alias Happen.LiveDelegateTest.RootHandler
 
   test "use LiveDelegate does not generate dispatchers without delegates" do
@@ -50,5 +51,12 @@ defmodule LiveDelegateTest do
   test "delegates info messages by tag" do
     assert {:info, {:added, :message}, :socket} =
              Dispatcher.handle_info({:source, :added, :message}, :socket)
+  end
+
+  test "mounts delegates in declaration order and skips disabled mounts" do
+    assert [
+             {:first, :params, :session},
+             {:second, :params, :session}
+           ] = MountDispatcher.mount_delegates([], :params, :session)
   end
 end

@@ -12,7 +12,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   def on_mount(params, session, socket) do
     socket
     |> delegate_assign(%{form: nil})
-    |> then(&Tools.on_mount(params, session, &1))
+    |> delegate_mount(params, session)
     |> assign_stream()
     |> subscribe()
   end
