@@ -119,7 +119,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
     |> render_click()
 
     view
-    |> form("#idea-body-form", %{"body" => "Make it happen"})
+    |> form("#ideas-body-form", %{"body" => "Make it happen"})
     |> render_submit()
 
     assert has_element?(view, "[data-testid='ideas-list'] > [data-testid^='idea-']")

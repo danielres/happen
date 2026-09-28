@@ -1,20 +1,20 @@
 defmodule HappenWeb.ExperimentsLive.Ideas.Components.Form do
   use HappenWeb, :html
+  use LiveDelegate, path: [:ideas]
 
-  alias HappenWeb.ExperimentsLive.Ideas.Components
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
+  attr :form, :map, required: true
 
-def render(assigns) do
+  def render(assigns) do
     ~H"""
     <.form
-      for={@form}
-      id="idea-body-form"
-      phx-change="ideas:change"
-      phx-submit="ideas:add"
-      phx-click-away="ideas:add_cancel"
-      phx-window-keydown="ideas:add_cancel"
-      phx-key="Escape"
       class="mb-2"
+      for={@form}
+      id={delegate_dom_id("body-form")}
+      phx-change={delegate_event("change")}
+      phx-click-away={delegate_event("add_cancel")}
+      phx-key="Escape"
+      phx-submit={delegate_event("add")}
+      phx-window-keydown={delegate_event("add_cancel")}
     >
       <label class="input input-info pr-0 w-full">
         <input
@@ -33,5 +33,4 @@ def render(assigns) do
     </.form>
     """
   end
-  
 end
