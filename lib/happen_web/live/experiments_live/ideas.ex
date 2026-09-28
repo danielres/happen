@@ -1,20 +1,18 @@
 defmodule HappenWeb.ExperimentsLive.Ideas do
   use HappenWeb, :live_view
+  use LiveDelegate
 
+  alias HappenWeb.ExperimentsLive.Ideas.Tools
   alias HappenWeb.ExperimentsLive.Ideas.Components
   alias HappenWeb.ExperimentsLive.Ideas.Store
   alias HappenWeb.ExperimentsLive.Ideas.Utils
-  alias HappenWeb.ExperimentsLive.User
 
-  def on_mount(_params, _session, socket) do
+  delegate(:tools, Tools)
+
+  def on_mount(params, session, socket) do
     socket
-    |> assign(
-      ideas: %{
-        form: nil,
-        # tools: nil,
-        tools: :start
-      }
-    )
+    |> assign(ideas: %{form: nil})
+    |> then(&Tools.on_mount(params, session, &1))
     |> assign_stream()
     |> subscribe()
   end
@@ -38,28 +36,6 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
       )
 
     stream(socket, :ideas, ideas, reset: true)
-  end
-
-  def handle_event("tools_toggle", _params, socket) do
-    tools_active? = socket.assigns.ideas.tools != nil
-    tools = if tools_active?, do: nil, else: :start
-    socket = socket |> update(:ideas, &Map.put(&1, :tools, tools))
-    {:noreply, socket}
-  end
-
-  def handle_event("tools_reset_all_votes_start", _params, socket) do
-    socket = socket |> update(:ideas, &Map.put(&1, :tools, :reset_all_votes))
-    {:noreply, socket}
-  end
-
-  def handle_event("tools_remove_unpopular_ideas_start", _params, socket) do
-    socket = socket |> update(:ideas, &Map.put(&1, :tools, :remove_unpopular_ideas))
-    {:noreply, socket}
-  end
-
-  def handle_event("tools_remove_all_ideas_start", _params, socket) do
-    socket = socket |> update(:ideas, &Map.put(&1, :tools, :remove_all_ideas))
-    {:noreply, socket}
   end
 
   def handle_event("add_start", _params, socket) do
@@ -115,8 +91,8 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     end
   end
 
-  def button_tools(assigns), do: Components.Tools.button(assigns)
-  def render_tools(assigns), do: Components.Tools.render(assigns)
+  def button_tools(assigns), do: Tools.button(assigns)
+  def render_tools(assigns), do: Tools.render(assigns)
   def render_form(assigns), do: Components.Form.render(assigns)
 
   def button_add(assigns) do
