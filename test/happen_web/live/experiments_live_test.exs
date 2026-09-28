@@ -80,6 +80,8 @@ defmodule HappenWeb.ExperimentsLiveTest do
     {:ok, first_view, _html} = live(first_conn, ~p"/ex/#{room_name}")
     {:ok, second_view, _html} = live(second_conn, ~p"/ex/#{room_name}")
 
+    assert has_element?(first_view, "[data-testid='presences-count']", "2")
+    assert has_element?(second_view, "[data-testid='presences-count']", "2")
     assert has_element?(first_view, "[data-testid='current-user-badge'][style*='40']")
     assert has_element?(second_view, "[data-testid='current-user-badge'][style*='220']")
   end

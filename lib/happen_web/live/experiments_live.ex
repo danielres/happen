@@ -100,7 +100,9 @@ defmodule HappenWeb.ExperimentsLive do
             phx-value-tab="presences"
           >
             <:label><.icon name="hero-users-solid" class="size-5" /></:label>
-            <:indicator><span class="opacity-60">88</span></:indicator>
+            <:indicator>
+              <span data-testid="presences-count" class="opacity-60">{length(@presences)}</span>
+            </:indicator>
             <.section>
               <:title>Online now</:title>
               <Presences.render presences={@presences} />
