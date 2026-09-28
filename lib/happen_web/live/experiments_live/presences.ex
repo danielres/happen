@@ -1,12 +1,15 @@
 defmodule HappenWeb.ExperimentsLive.Presences do
   use HappenWeb, :live_view
+  use LiveDelegate, path: [:presences]
 
   def on_mount(_params, _session, socket) do
     socket
-    |> assign(presences: [])
+    |> delegate_assign([])
     |> monitor()
     |> join()
   end
+
+  def leave_event, do: delegate_event("leave")
 
   def handle_event("leave", _payload, socket) do
     room = socket.assigns.room
@@ -16,8 +19,7 @@ defmodule HappenWeb.ExperimentsLive.Presences do
 
   def handle_info({_events, _info}, socket) do
     room = socket.assigns.room
-    socket = socket |> assign(presences: get_presences(room))
-    {:noreply, socket}
+    {:noreply, socket |> delegate_assign(get_presences(room))}
   end
 
   defp join(socket) do

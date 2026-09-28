@@ -1,6 +1,6 @@
 defmodule HappenWeb.ExperimentsLive.Ideas do
   use HappenWeb, :live_view
-  use LiveDelegate
+  use LiveDelegate, path: [:ideas]
 
   alias HappenWeb.ExperimentsLive.Ideas.Tools
   alias HappenWeb.ExperimentsLive.Ideas.Components
@@ -11,7 +11,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
 
   def on_mount(params, session, socket) do
     socket
-    |> assign(ideas: %{form: nil})
+    |> delegate_assign(%{form: nil})
     |> then(&Tools.on_mount(params, session, &1))
     |> assign_stream()
     |> subscribe()
@@ -39,8 +39,11 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   end
 
   def handle_event("add_start", _params, socket) do
-    socket = socket |> assign_form()
-    socket = socket |> update(:ideas, &Map.put(&1, :tools, nil))
+    socket =
+      socket
+      |> assign_form()
+      |> delegate_assign(:tools, nil)
+
     {:noreply, socket}
   end
 
@@ -54,8 +57,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   end
 
   def handle_event("add_cancel", _params, socket) do
-    socket = socket |> update(:ideas, &Map.put(&1, :form, nil))
-    {:noreply, socket}
+    {:noreply, socket |> delegate_assign(:form, nil)}
   end
 
   def handle_event("change", %{"body" => body}, socket) do
@@ -76,7 +78,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
 
   defp assign_form(socket, body \\ "") do
     form = %{"body" => body}
-    socket |> update(:ideas, &Map.put(&1, :form, to_form(form)))
+    socket |> delegate_assign(:form, to_form(form))
   end
 
   defp vote(%{"idea-id" => idea_id}, socket, direction) do
@@ -98,9 +100,9 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   def button_add(assigns) do
     ~H"""
     <button
-      data-testid="ideas-add"
+      data-testid={delegate_dom_id("add")}
       class="btn btn-sm btn-info btn-circle"
-      phx-click="ideas:add_start"
+      phx-click={delegate_event("add_start")}
       type="button"
     >
       <.icon name="hero-plus-micro" />

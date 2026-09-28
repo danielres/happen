@@ -1,6 +1,8 @@
 defmodule HappenWeb.ExperimentsLive.Components.Header do
   use HappenWeb, :html
 
+  alias HappenWeb.ExperimentsLive.Presences
+
   def render(assigns) do
     ~H"""
     <div class="flex justify-between gap-4 items-baseline">
@@ -14,7 +16,7 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
         <:pane class="bg-base-200 dropdown-end rounded-box">
           <ul class="menu w-40">
             <li class="bg-base-100">
-              <.link phx-click="presence:leave">leave</.link>
+              <.link data-testid="presences-leave" phx-click={Presences.leave_event()}>leave</.link>
             </li>
           </ul>
         </:pane>

@@ -18,15 +18,42 @@ defmodule HappenWeb.ExperimentsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
 
     view
-    |> form("#message-body-form", %{"body" => "Hello"})
+    |> form("#messages-body-form", %{"body" => "Hello"})
     |> render_change()
 
     view
-    |> form("#message-body-form", %{"body" => "Hello"})
+    |> form("#messages-body-form", %{"body" => "Hello"})
     |> render_submit()
 
     assert has_element?(view, "#messages > li")
-    assert has_element?(view, "#message-body-form input[value='']")
+    assert has_element?(view, "#messages-body-form input[value='']")
+  end
+
+  test "delegates nested idea tools events", %{conn: conn} do
+    room_name = "idea-tools-#{System.unique_integer([:positive])}"
+
+    conn =
+      init_test_session(conn, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Test guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+
+    refute has_element?(view, "[data-testid='ideas-tools-panel']")
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    assert has_element?(view, "[data-testid='ideas-tools-panel']")
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    refute has_element?(view, "[data-testid='ideas-tools-panel']")
   end
 
   test "assigns room hues to the current users' header badges", %{conn: conn} do
@@ -54,6 +81,25 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
     assert has_element?(first_view, "[data-testid='current-user-badge'][style*='40']")
     assert has_element?(second_view, "[data-testid='current-user-badge'][style*='220']")
+  end
+
+  test "delegates the leave event through presences", %{conn: conn} do
+    room_name = "leave-#{System.unique_integer([:positive])}"
+
+    conn =
+      init_test_session(conn, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Test guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+
+    view
+    |> element("[data-testid='presences-leave']")
+    |> render_click()
+
+    assert_redirect(view, ~p"/guest/logout")
   end
 
   test "adds an idea and toggles the current user's vote", %{conn: conn} do

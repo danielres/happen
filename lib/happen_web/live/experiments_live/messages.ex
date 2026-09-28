@@ -1,14 +1,16 @@
 defmodule HappenWeb.ExperimentsLive.Messages do
   use HappenWeb, :live_view
+  use LiveDelegate, path: [:messages]
 
   alias HappenWeb.ExperimentsLive
   alias HappenWeb.ExperimentsLive.Messages.Store
+  alias ExperimentsLive.User
 
   def on_mount(_params, _session, socket) do
     socket
-    |> assign_stream()
-    |> assign(messages: %{ttl: Store.ttl()})
+    |> delegate_assign(%{ttl: Store.ttl()})
     |> assign_form()
+    |> assign_stream()
     |> subscribe()
   end
 
@@ -20,20 +22,18 @@ defmodule HappenWeb.ExperimentsLive.Messages do
 
   defp assign_form(socket, body \\ "") do
     form = %{"body" => body}
-    socket |> update(:messages, &Map.put(&1, :form, to_form(form)))
+    socket |> delegate_assign(:form, to_form(form))
   end
 
   defp subscribe(socket) do
-    if connected?(socket), do: Store.subscribe(socket.assigns.room.data.name)
+    if Phoenix.LiveView.connected?(socket), do: Store.subscribe(socket.assigns.room.data.name)
     socket
   end
 
   def handle_event("add", %{"body" => body}, socket) do
     room_name = socket.assigns.room.data.name
     user = socket.assigns.user.data
-
     Store.add_message(room_name, user, body)
-
     {:noreply, socket |> assign_form()}
   end
 
@@ -54,7 +54,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   end
 
   defp stream_delete_by_id(socket, message_id) do
-    socket |> stream_delete_by_dom_id(:messages, "messages-#{message_id}")
+    socket |> stream_delete_by_dom_id(:messages, delegate_dom_id(message_id))
   end
 
   attr :form, :map, required: true
@@ -66,9 +66,9 @@ defmodule HappenWeb.ExperimentsLive.Messages do
     <div class="space-y-2">
       <.form
         for={@form}
-        id="message-body-form"
-        phx-change="messages:change"
-        phx-submit="messages:add"
+        id={delegate_dom_id("body-form")}
+        phx-change={delegate_event("change")}
+        phx-submit={delegate_event("add")}
       >
         <.input
           autocomplete="off"
@@ -91,7 +91,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
           id={id}
           class={["fade-out bg-base-200 rounded-box px-4 py-2"]}
         >
-          <div class="float-right"><ExperimentsLive.User.badge user={message.user} /></div>
+          <div class="float-right"><User.badge user={message.user} /></div>
           <div class="text-base-content/75">{message.body}</div>
         </li>
       </ul>

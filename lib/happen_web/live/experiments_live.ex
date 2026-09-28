@@ -10,7 +10,7 @@ defmodule HappenWeb.ExperimentsLive do
 
   delegate(:messages, Messages)
   delegate(:ideas, Ideas)
-  delegate(:presence, Presences, info: [:group])
+  delegate(:presences, Presences, info: [:group])
 
   def mount(params, session, socket) do
     socket =
@@ -55,7 +55,7 @@ defmodule HappenWeb.ExperimentsLive do
               <:title>
                 <div class="flex justify-between gap-4 items-end">
                   <div class="grow">Ideas</div>
-                  <Ideas.button_tools :if={!@ideas[:form]} active?={@ideas.tools} />
+                  <Ideas.button_tools :if={!@ideas[:form]} active?={@ideas.tools != nil} />
                   <Ideas.button_add :if={!@ideas[:form]} />
                 </div>
               </:title>
