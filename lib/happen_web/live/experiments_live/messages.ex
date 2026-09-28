@@ -81,19 +81,47 @@ defmodule HappenWeb.ExperimentsLive.Messages do
 
       <ul
         id="messages"
-        phx-update="stream"
         class="space-y-1"
+        phx-hook=".MessageFade"
+        phx-update="stream"
         style={"--message-ttl: #{@messages.ttl}s"}
       >
         <li
           :for={{id, message} <- @stream}
           id={id}
           class={["fade-out bg-base-200 rounded-box px-4 py-2"]}
+          data-created-at={DateTime.to_unix(message.created_at, :millisecond)}
         >
           <div class="float-right"><User.badge user={message.user} /></div>
           <div class="text-base-content/75">{message.body}</div>
         </li>
       </ul>
+
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".MessageFade">
+        export default {
+          mounted() {
+            this.sync = () => {
+              this.el.querySelectorAll("[data-created-at]").forEach(message => {
+                const age = Math.max(Date.now() - Number(message.dataset.createdAt), 0)
+                message.style.setProperty("--message-age", `${age}ms`)
+              })
+            }
+
+            this.onTabChange = () => this.sync()
+
+            this.sync()
+            document.addEventListener("change", this.onTabChange)
+          },
+
+          updated() {
+            this.sync()
+          },
+
+          destroyed() {
+            document.removeEventListener("change", this.onTabChange)
+          }
+        }
+      </script>
     </div>
     """
   end
