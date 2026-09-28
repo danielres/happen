@@ -46,7 +46,7 @@ defmodule HappenWeb.ExperimentsLive do
           ]}>
             <.section>
               <:title>Online now</:title>
-              <Presences.list presences={@presences} />
+              <Presences.render presences={@presences} />
             </.section>
 
             <.section>
@@ -68,11 +68,7 @@ defmodule HappenWeb.ExperimentsLive do
 
           <.section>
             <:title>Ephemeral chit-chat</:title>
-            <Messages.render
-              form={@messages.form}
-              stream={@streams.messages}
-              ttl={@messages.ttl}
-            />
+            <Messages.render messages={@messages} stream={@streams.messages} />
           </.section>
         </main>
       </div>
@@ -88,6 +84,7 @@ defmodule HappenWeb.ExperimentsLive do
       <h3 :if={@title != []} class="small-caps tracking-wider opacity-75">
         {render_slot(@title)}
       </h3>
+
       <div>{render_slot(@inner_block)}</div>
     </section>
     """

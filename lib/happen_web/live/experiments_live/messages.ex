@@ -26,7 +26,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   end
 
   defp subscribe(socket) do
-    if Phoenix.LiveView.connected?(socket), do: Store.subscribe(socket.assigns.room.data.name)
+    if connected?(socket), do: Store.subscribe(socket.assigns.room.data.name)
     socket
   end
 
@@ -57,22 +57,21 @@ defmodule HappenWeb.ExperimentsLive.Messages do
     socket |> stream_delete_by_dom_id(:messages, delegate_dom_id(message_id))
   end
 
-  attr :form, :map, required: true
+  attr :messages, :map, required: true
   attr :stream, :list, required: true
-  attr :ttl, :integer, required: true
 
   def render(assigns) do
     ~H"""
     <div class="space-y-2">
       <.form
-        for={@form}
+        for={@messages.form}
         id={delegate_dom_id("body-form")}
         phx-change={delegate_event("change")}
         phx-submit={delegate_event("add")}
       >
         <.input
           autocomplete="off"
-          field={@form[:body]}
+          field={@messages.form[:body]}
           placeholder="Say something"
           required
           phx-mounted={JS.focus()}
@@ -84,7 +83,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
         id="messages"
         phx-update="stream"
         class="space-y-1"
-        style={"--message-ttl: #{@ttl}s"}
+        style={"--message-ttl: #{@messages.ttl}s"}
       >
         <li
           :for={{id, message} <- @stream}

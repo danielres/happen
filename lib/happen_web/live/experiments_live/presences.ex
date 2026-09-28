@@ -79,7 +79,7 @@ defmodule HappenWeb.ExperimentsLive.Presences do
     Integer.mod(div(left_hue + right_hue, 2), 360)
   end
 
-  def list(assigns) do
+  def render(assigns) do
     ~H"""
     <ul class="flex gap-2">
       <li :for={{_pid, presence} <- @presences}>
