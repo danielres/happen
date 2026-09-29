@@ -36,4 +36,4 @@ happen-*.tar
 npm-debug.log
 /assets/node_modules/
 
-/notes/00-spec.md
+/notes
