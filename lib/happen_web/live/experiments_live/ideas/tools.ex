@@ -2,6 +2,8 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
   use HappenWeb, :html
   use LiveDelegate, path: [:ideas, :tools]
 
+  alias HappenWeb.ExperimentsLive.Ideas.Utils
+
   def on_mount(_params, _session, socket) do
     socket |> delegate_assign(nil)
   end
@@ -45,6 +47,8 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
     """
   end
 
+  attr :ideas, :list, required: true
+
   attr :tools, :atom,
     values: [:start, :reset_all_votes, :remove_unpopular_ideas, :remove_all_ideas],
     required: true
@@ -59,7 +63,10 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
       <div :if={@tools == :start} class="grid gap-2">
         <button
           class="btn btn-ghost btn-warning flex justify-between"
+          data-testid={delegate_dom_id("reset-all-votes")}
+          disabled={!Utils.has_votes?(@ideas)}
           phx-click={delegate_event("reset_all_votes_start")}
+          type="button"
         >
           Reset all votes <.icon name="hero-chevron-right-micro" />
         </button>

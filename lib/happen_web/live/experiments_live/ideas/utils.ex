@@ -18,7 +18,11 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Utils do
     end
   end
 
-  def has_votes?(idea) do
+  def has_votes?(ideas) when is_list(ideas) do
+    Enum.any?(ideas, &has_votes?/1)
+  end
+
+  def has_votes?(idea) when is_map(idea) do
     has_votes_up?(idea) || has_votes_down?(idea)
   end
 

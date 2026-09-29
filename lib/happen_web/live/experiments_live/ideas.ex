@@ -11,10 +11,10 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
 
   def on_mount(params, session, socket) do
     socket
-    |> delegate_assign(%{count: 0, form: nil})
+    |> delegate_assign(%{data: [], form: nil})
     |> assign_form("")
     |> delegate_mount(params, session)
-    |> assign_stream()
+    |> assign_ideas()
     |> subscribe()
   end
 
@@ -23,7 +23,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     socket
   end
 
-  defp assign_stream(socket) do
+  defp assign_ideas(socket) do
     room_name = socket.assigns.room.data.name
 
     ideas =
@@ -36,9 +36,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
         :desc
       )
 
-    socket
-    |> delegate_assign(:count, length(ideas))
-    |> stream(:ideas, ideas, reset: true)
+    socket |> delegate_assign(:data, ideas)
   end
 
   def handle_event("add", %{"body" => body}, socket) do
@@ -67,7 +65,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   end
 
   def handle_info({event, _idea}, socket) when event in [:added, :updated] do
-    {:noreply, assign_stream(socket)}
+    {:noreply, assign_ideas(socket)}
   end
 
   defp assign_form(socket, body \\ "") do
@@ -91,7 +89,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   def render_tools(assigns), do: Tools.render(assigns)
   def render_form(assigns), do: Components.Form.render(assigns)
 
-  attr :stream, :list, required: true
+  attr :ideas, :list, required: true
   attr :user_id, :string, required: true
 
   def render(assigns) do
@@ -100,12 +98,11 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
       id="ideas"
       data-testid="ideas-list"
       phx-hook="AutoAnimate"
-      phx-update="stream"
       class="space-y-2"
     >
       <li
-        :for={{id, idea} <- @stream}
-        id={id}
+        :for={idea <- @ideas}
+        id={"idea-#{idea.id}"}
         data-testid={"idea-#{idea.id}"}
         class={[
           "grid grid-cols-[1fr_auto] gap-0"

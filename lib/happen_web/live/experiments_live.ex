@@ -55,7 +55,7 @@ defmodule HappenWeb.ExperimentsLive do
           >
             <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
             <:indicator>
-              <Tabs.count count={@ideas.count} data-testid="ideas-count" />
+              <Tabs.count count={@ideas.data |> length()} data-testid="ideas-count" />
             </:indicator>
 
             <.section>
@@ -71,8 +71,8 @@ defmodule HappenWeb.ExperimentsLive do
 
               <div class="grid gap-2">
                 <Ideas.render_form :if={is_nil(@ideas.tools)} form={@ideas.form} />
-                <Ideas.render_tools :if={@ideas.tools} tools={@ideas.tools} />
-                <Ideas.render stream={@streams.ideas} user_id={@user.data.id} />
+                <Ideas.render_tools :if={@ideas.tools} ideas={@ideas.data} tools={@ideas.tools} />
+                <Ideas.render ideas={@ideas.data} user_id={@user.data.id} />
               </div>
             </.section>
           </Tabs.tab>

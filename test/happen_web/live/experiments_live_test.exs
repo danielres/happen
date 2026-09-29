@@ -50,6 +50,11 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
     assert has_element?(view, "[data-testid='ideas-tools-panel']")
 
+    assert has_element?(
+             view,
+             "[data-testid='ideas-tools-reset-all-votes'][disabled]"
+           )
+
     view
     |> element("[data-testid='ideas-tools-button']")
     |> render_click()
@@ -118,10 +123,6 @@ defmodule HappenWeb.ExperimentsLiveTest do
     {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
 
     view
-    |> element("[data-testid='ideas-add']")
-    |> render_click()
-
-    view
     |> form("#ideas-body-form", %{"body" => "Make it happen"})
     |> render_submit()
 
@@ -133,16 +134,37 @@ defmodule HappenWeb.ExperimentsLiveTest do
     |> render_click()
 
     assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='true']")
-    assert has_element?(view, "[data-testid^='idea-upvoters-']")
-    assert has_element?(view, "[data-testid^='idea-downvoters-']")
-    assert has_element?(view, "[data-testid^='idea-upvoter-']")
-    refute has_element?(view, "[data-testid^='idea-downvoter-']")
+    assert has_element?(view, "[data-testid^='idea-voters-']", "Upvotes:")
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    assert has_element?(view, "[data-testid='ideas-tools-reset-all-votes']")
+
+    refute has_element?(
+             view,
+             "[data-testid='ideas-tools-reset-all-votes'][disabled]"
+           )
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
 
     view
     |> element("[data-testid^='ideas-upvote-']")
     |> render_click()
 
     assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='false']")
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    assert has_element?(
+             view,
+             "[data-testid='ideas-tools-reset-all-votes'][disabled]"
+           )
   end
 
   test "sorts ideas by score", %{conn: conn} do
