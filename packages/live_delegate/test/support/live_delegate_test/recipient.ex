@@ -1,4 +1,4 @@
-defmodule Happen.LiveDelegateTest.Recipient do
+defmodule LiveDelegate.TestSupport.Recipient do
   use LiveDelegate
 
   def handle_event(event, payload, socket) do

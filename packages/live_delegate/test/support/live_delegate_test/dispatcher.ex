@@ -1,8 +1,8 @@
-defmodule Happen.LiveDelegateTest.Dispatcher do
-  use HappenWeb, :live_view
+defmodule LiveDelegate.TestSupport.Dispatcher do
+  use Phoenix.LiveView
   use LiveDelegate
 
-  alias Happen.LiveDelegateTest.Recipient
+  alias LiveDelegate.TestSupport.Recipient
 
   delegate(:recipient, Recipient, info: [:source])
 

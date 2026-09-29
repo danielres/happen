@@ -1,10 +1,10 @@
-defmodule Happen.LiveDelegateTest.MountDispatcher do
-  use HappenWeb, :live_view
+defmodule LiveDelegate.TestSupport.MountDispatcher do
+  use Phoenix.LiveView
   use LiveDelegate
 
-  alias Happen.LiveDelegateTest.MountFirst
-  alias Happen.LiveDelegateTest.MountSecond
-  alias Happen.LiveDelegateTest.Recipient
+  alias LiveDelegate.TestSupport.MountFirst
+  alias LiveDelegate.TestSupport.MountSecond
+  alias LiveDelegate.TestSupport.Recipient
 
   delegate(:first, MountFirst, events: false, info: false)
   delegate(:recipient, Recipient, info: false, mount: false)

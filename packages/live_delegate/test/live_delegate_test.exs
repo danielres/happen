@@ -1,10 +1,10 @@
 defmodule LiveDelegateTest do
   use ExUnit.Case, async: true
 
-  alias Happen.LiveDelegateTest.BareHandler
-  alias Happen.LiveDelegateTest.Dispatcher
-  alias Happen.LiveDelegateTest.MountDispatcher
-  alias Happen.LiveDelegateTest.RootHandler
+  alias LiveDelegate.TestSupport.BareHandler
+  alias LiveDelegate.TestSupport.Dispatcher
+  alias LiveDelegate.TestSupport.MountDispatcher
+  alias LiveDelegate.TestSupport.RootHandler
 
   test "use LiveDelegate does not generate dispatchers without delegates" do
     refute function_exported?(BareHandler, :handle_event, 3)

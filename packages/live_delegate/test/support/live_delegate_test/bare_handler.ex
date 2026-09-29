@@ -1,4 +1,4 @@
-defmodule Happen.LiveDelegateTest.BareHandler do
+defmodule LiveDelegate.TestSupport.BareHandler do
   use LiveDelegate, path: [:ideas, :tools]
 
   def assign_relative(socket, path, value), do: socket |> delegate_assign(path, value)
