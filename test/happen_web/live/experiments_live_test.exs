@@ -55,6 +55,11 @@ defmodule HappenWeb.ExperimentsLiveTest do
              "[data-testid='ideas-tools-reset-all-votes'][disabled]"
            )
 
+    assert has_element?(
+             view,
+             "[data-testid='ideas-tools-remove-unpopular-ideas'][disabled]"
+           )
+
     view
     |> element("[data-testid='ideas-tools-button']")
     |> render_click()
@@ -147,6 +152,11 @@ defmodule HappenWeb.ExperimentsLiveTest do
              "[data-testid='ideas-tools-reset-all-votes'][disabled]"
            )
 
+    assert has_element?(
+             view,
+             "[data-testid='ideas-tools-remove-unpopular-ideas'][disabled]"
+           )
+
     view
     |> element("[data-testid='ideas-tools-button']")
     |> render_click()
@@ -164,6 +174,23 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(
              view,
              "[data-testid='ideas-tools-reset-all-votes'][disabled]"
+           )
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    view
+    |> element("[data-testid^='ideas-downvote-']")
+    |> render_click()
+
+    view
+    |> element("[data-testid='ideas-tools-button']")
+    |> render_click()
+
+    refute has_element?(
+             view,
+             "[data-testid='ideas-tools-remove-unpopular-ideas'][disabled]"
            )
   end
 

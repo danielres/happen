@@ -26,6 +26,10 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Utils do
     has_votes_up?(idea) || has_votes_down?(idea)
   end
 
+  def has_unpopular_ideas?(ideas) when is_list(ideas) do
+    Enum.any?(ideas, &(score(&1) < 0))
+  end
+
   defp has_votes_up?(idea) do
     vote_count(idea, :up) > 0
   end

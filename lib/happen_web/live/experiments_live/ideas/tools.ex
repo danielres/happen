@@ -73,7 +73,10 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
 
         <button
           class="btn btn-ghost btn-warning flex justify-between"
+          data-testid={delegate_dom_id("remove-unpopular-ideas")}
+          disabled={!Utils.has_unpopular_ideas?(@ideas)}
           phx-click={delegate_event("remove_unpopular_ideas_start")}
+          type="button"
         >
           Remove unpopular ideas <.icon name="hero-chevron-right-micro" />
         </button>
