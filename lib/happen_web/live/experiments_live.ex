@@ -41,7 +41,7 @@ defmodule HappenWeb.ExperimentsLive do
     </Layouts.app>
 
     <Layouts.app :if={@user.data} flash={@flash}>
-      <div class="max-w-md mx-auto space-y-2 px-4 py-2">
+      <div class="max-w-md mx-auto space-y-3 px-4 py-2">
         <header>
           <Components.Header.render user={@user.data} room={@room.data} />
         </header>
@@ -55,7 +55,7 @@ defmodule HappenWeb.ExperimentsLive do
           >
             <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
             <:indicator>
-              <span data-testid="ideas-count" class="opacity-60">{@ideas.count}</span>
+              <Tabs.count count={@ideas.count} data-testid="ideas-count" />
             </:indicator>
 
             <.section>
@@ -83,10 +83,11 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="messages"
           >
-            <:label><.icon name="hero-chat-bubble-left-right-mini" class="size-5" /></:label>
+            <:label><.icon name="hero-chat-bubble-left-mini" class="size-5" /></:label>
             <:indicator>
-              <span data-testid="messages-count" class="opacity-60">{@messages.count}</span>
+              <Tabs.count count={@messages.count} data-testid="messages-count" />
             </:indicator>
+
             <.section>
               <:title>Ephemeral chit-chat</:title>
               <Messages.render messages={@messages} stream={@streams.messages} />
@@ -99,9 +100,9 @@ defmodule HappenWeb.ExperimentsLive do
             phx-click="tabs:select"
             phx-value-tab="presences"
           >
-            <:label><.icon name="hero-users-solid" class="size-5" /></:label>
+            <:label><.icon name="hero-user-solid" class="size-5" /></:label>
             <:indicator>
-              <span data-testid="presences-count" class="opacity-60">{length(@presences)}</span>
+              <Tabs.count count={length(@presences)} data-testid="presences-count" />
             </:indicator>
             <.section>
               <:title>Online now</:title>
