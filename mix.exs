@@ -41,7 +41,7 @@ defmodule Happen.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:live_delegate, path: "packages/live_delegate"},
+      {:live_delegate, "~> 0.1.0"},
       {:live_stash, "~> 1.0"},
       {:group, "~> 0.2.0"},
       {:picosat_elixir, "~> 0.2"},
