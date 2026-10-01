@@ -49,6 +49,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
     |> render_click()
 
     assert has_element?(view, "[data-testid='ideas-tools-panel']")
+    assert has_element?(view, "[data-testid='ideas-tools-track'].translate-x-0")
 
     assert has_element?(
              view,
@@ -58,6 +59,11 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(
              view,
              "[data-testid='ideas-tools-remove-unpopular-ideas'][disabled]"
+           )
+
+    assert has_element?(
+             view,
+             "[data-testid='ideas-tools-remove-all-ideas'][disabled]"
            )
 
     view
@@ -156,6 +162,18 @@ defmodule HappenWeb.ExperimentsLiveTest do
              view,
              "[data-testid='ideas-tools-remove-unpopular-ideas'][disabled]"
            )
+
+    refute has_element?(
+             view,
+             "[data-testid='ideas-tools-remove-all-ideas'][disabled]"
+           )
+
+    view
+    |> element("[data-testid='ideas-tools-reset-all-votes']")
+    |> render_click()
+
+    assert has_element?(view, "[data-testid='ideas-tools-track'].-translate-x-full")
+    assert has_element?(view, "[data-testid='ideas-tools-panel']", "Are you sure?")
 
     view
     |> element("[data-testid='ideas-tools-button']")

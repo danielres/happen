@@ -57,48 +57,103 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
     ~H"""
     <div
       data-testid={delegate_dom_id("panel")}
-      class="border-2 border-warning/75 bg-warning/10 rounded-box p-2 mb-2"
+      class={[
+        "border-2 rounded-box p-2 mb-2",
+        @tools != :remove_all_ideas && "border-warning/30 bg-warning/10",
+        @tools == :remove_all_ideas && "border-error/30 bg-error/10",
+        "transition"
+      ]}
       phx-click-away={delegate_event("close")}
     >
-      <div :if={@tools == :start} class="grid gap-2">
-        <button
-          class="btn btn-ghost btn-warning flex justify-between"
-          data-testid={delegate_dom_id("reset-all-votes")}
-          disabled={!Utils.has_votes?(@ideas)}
-          phx-click={delegate_event("reset_all_votes_start")}
-          type="button"
+      <div class="overflow-hidden">
+        <div
+          data-testid={delegate_dom_id("track")}
+          class={[
+            "flex items-center",
+            "transition-transform duration-200 ease-out",
+            "motion-reduce:transition-none",
+            @tools == :start && "translate-x-0",
+            @tools != :start && "-translate-x-full"
+          ]}
         >
-          Reset all votes <.icon name="hero-chevron-right-micro" />
-        </button>
+          <div
+            class="grid w-full shrink-0 gap-2"
+            inert={@tools != :start}
+          >
+            <button
+              class="btn btn-ghost btn-warning flex justify-between"
+              data-testid={delegate_dom_id("reset-all-votes")}
+              disabled={!Utils.has_votes?(@ideas)}
+              phx-click={delegate_event("reset_all_votes_start")}
+              type="button"
+            >
+              Reset all votes <.icon name="hero-chevron-right-micro" />
+            </button>
 
-        <button
-          class="btn btn-ghost btn-warning flex justify-between"
-          data-testid={delegate_dom_id("remove-unpopular-ideas")}
-          disabled={!Utils.has_unpopular_ideas?(@ideas)}
-          phx-click={delegate_event("remove_unpopular_ideas_start")}
-          type="button"
-        >
-          Remove unpopular ideas <.icon name="hero-chevron-right-micro" />
-        </button>
+            <button
+              class="btn btn-ghost btn-warning flex justify-between"
+              data-testid={delegate_dom_id("remove-unpopular-ideas")}
+              disabled={!Utils.has_unpopular_ideas?(@ideas)}
+              phx-click={delegate_event("remove_unpopular_ideas_start")}
+              type="button"
+            >
+              Remove unpopular ideas <.icon name="hero-chevron-right-micro" />
+            </button>
 
-        <button
-          class="btn btn-ghost btn-error flex justify-between"
-          phx-click={delegate_event("remove_all_ideas_start")}
-        >
-          Remove all ideas <.icon name="hero-chevron-right-micro" />
-        </button>
-      </div>
+            <button
+              class="btn btn-ghost btn-error flex justify-between"
+              data-testid={delegate_dom_id("remove-all-ideas")}
+              disabled={Enum.empty?(@ideas)}
+              phx-click={delegate_event("remove_all_ideas_start")}
+              type="button"
+            >
+              Remove all ideas <.icon name="hero-chevron-right-micro" />
+            </button>
+          </div>
 
-      <div :if={@tools == :reset_all_votes}>
-        Are you sure?
-      </div>
+          <div
+            class={[
+              "w-full shrink-0",
+              "flex justify-center text-center",
+              "font-bold",
+              "text-balance",
+              "text-sm",
+              "leading-tight",
+              "*:space-y-3"
+            ]}
+            inert={@tools == :start}
+          >
+            <div
+              :if={@tools == :reset_all_votes}
+              class="text-warning"
+            >
+              <p>Are you sure?</p>
+              <button class="btn btn-warning" type="button">
+                Reset all votes
+              </button>
+            </div>
 
-      <div :if={@tools == :remove_unpopular_ideas}>
-        Are you sure? (remove unpopular)
-      </div>
+            <div
+              :if={@tools == :remove_unpopular_ideas}
+              class="text-warning"
+            >
+              <p>Remove ideas with more downvotes than upvotes?</p>
+              <button class="btn btn-warning" type="button">
+                Remove unpopular ideas
+              </button>
+            </div>
 
-      <div :if={@tools == :remove_all_ideas}>
-        Are you sure? (remove all)
+            <div
+              :if={@tools == :remove_all_ideas}
+              class="text-error"
+            >
+              <p>Are you sure?</p>
+              <button class="btn btn-error" type="button">
+                Remove all ideas
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     """
