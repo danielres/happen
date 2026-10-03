@@ -1,0 +1,33 @@
+@import "../../../deps/toast/assets/css/toast.css";
+
+
+.live-toast-group .toast {
+  --toast-color: var(--color-base-content);
+  --toast-border: var(--t-color);
+  --toast-icon-color: var(--t-color);
+  --toast-bg: color-mix(var(--t-color), var(--color-base-300));
+  @apply rounded-lg;
+  @apply border-2;
+  @apply font-semibold;
+}
+
+.live-toast-group .toast-info {
+  --t-color: var(--color-info);
+}
+
+.live-toast-group .toast-success {
+  --t-color: var(--color-success);
+}
+
+.live-toast-group .toast-warning {
+  --t-color: var(--color-warning);
+}
+
+.live-toast-group .toast-error {
+  --t-color: var(--color-error);
+}
+
+.live-toast-group .toast-loading {
+  --toast-icon-color: var(--color-base-content);
+  --t-color: var(--color-base-200);
+}

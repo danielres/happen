@@ -4,6 +4,8 @@
 @import "tailwindcss" source(none);
 @source "../../deps/ash_authentication_phoenix";
 @import "phoenix-colocated/happen/colocated.css";
+@import "./app/toast.css";
+
 @source "../css";
 @source "../js";
 @source "../../lib/happen_web";
@@ -17,6 +19,7 @@
 /* daisyUI Tailwind Plugin. */
 @plugin "daisyui/packages/bundle/daisyui" {
   themes: false;
+  exclude: toast;
 }
 
 /* daisyUI theme plugin.

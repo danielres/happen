@@ -39,14 +39,22 @@ defmodule HappenWeb.Layouts do
     <div class="h-svh flex items-center justify-center">
       {render_slot(@inner_block)}
     </div>
-    <.flash_group flash={@flash} />
+    <.toast_group flash={@flash} />
     """
   end
 
   def app(assigns) do
     ~H"""
     {render_slot(@inner_block)}
-    <.flash_group flash={@flash} />
+    <.toast_group flash={@flash} />
+    """
+  end
+
+  attr :flash, :map, required: true
+
+  defp toast_group(assigns) do
+    ~H"""
+    <Toast.toast_group flash={@flash} theme="dark" />
     """
   end
 

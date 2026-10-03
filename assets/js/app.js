@@ -24,6 +24,7 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import { hooks as colocatedHooks } from "phoenix-colocated/happen"
 import topbar from "../vendor/topbar"
+import Toast from "../../deps/toast/assets/js/toast.js";
 import { AutoAnimate } from "./hooks/AutoAnimate"
 import { CapitalizeFirstLetter } from "./hooks/CapitalizeFirstLetter";
 
@@ -34,6 +35,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: initLiveStash({ _csrf_token: csrfToken }),
   longPollFallbackMs: 2500,
   hooks: {
+    Toast,
     AutoAnimate,
     CapitalizeFirstLetter,
     ...colocatedHooks,
