@@ -3,7 +3,40 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
   import Phoenix.LiveViewTest
 
+  alias Happen.RoomKey
   alias HappenWeb.ExperimentsLive.Ideas.Store, as: IdeasStore
+
+  test "decodes the room key into the room name", %{conn: conn} do
+    room_name = "Café room"
+
+    conn =
+      init_test_session(conn, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Test guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, view, _html} = live(conn, room_path(room_name))
+
+    assert has_element?(view, "[data-testid='room-name']", room_name)
+  end
+
+  test "redirects malformed room keys to the room form", %{conn: conn} do
+    room_form_path = ~p"/ex"
+
+    assert {:error, {:redirect, %{to: ^room_form_path}}} = live(conn, "/ex/invalid!")
+  end
+
+  test "preserves the room key when creating a guest session", %{conn: conn} do
+    room_key = RoomKey.encode("Café room")
+
+    {:ok, view, _html} = live(conn, ~p"/ex/#{room_key}")
+
+    assert has_element?(
+             view,
+             "#guest-name-form input[name='guest[room_name]'][value='#{room_key}']"
+           )
+  end
 
   test "delegates message form events and store broadcasts", %{conn: conn} do
     room_name = "messages-#{System.unique_integer([:positive])}"
@@ -15,7 +48,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+    {:ok, view, _html} = live(conn, room_path(room_name))
 
     view
     |> form("#messages-body-form", %{"body" => "Hello"})
@@ -40,7 +73,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+    {:ok, view, _html} = live(conn, room_path(room_name))
 
     refute has_element?(view, "[data-testid='ideas-tools-panel']")
 
@@ -93,8 +126,8 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.add(since, 1, :second)
       })
 
-    {:ok, first_view, _html} = live(first_conn, ~p"/ex/#{room_name}")
-    {:ok, second_view, _html} = live(second_conn, ~p"/ex/#{room_name}")
+    {:ok, first_view, _html} = live(first_conn, room_path(room_name))
+    {:ok, second_view, _html} = live(second_conn, room_path(room_name))
 
     assert has_element?(first_view, "[data-testid='presences-count']", "2")
     assert has_element?(second_view, "[data-testid='presences-count']", "2")
@@ -112,7 +145,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+    {:ok, view, _html} = live(conn, room_path(room_name))
 
     view
     |> element("[data-testid='presences-leave']")
@@ -139,8 +172,8 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
-    {:ok, second_view, _html} = live(second_conn, ~p"/ex/#{room_name}")
+    {:ok, view, _html} = live(conn, room_path(room_name))
+    {:ok, second_view, _html} = live(second_conn, room_path(room_name))
 
     view
     |> form("#ideas-body-form", %{"body" => "Make it happen"})
@@ -243,7 +276,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+    {:ok, view, _html} = live(conn, room_path(room_name))
 
     first_idea = IdeasStore.add_idea(room_name, author, "First idea")
     second_idea = IdeasStore.add_idea(room_name, author, "Second idea")
@@ -264,4 +297,6 @@ defmodule HappenWeb.ExperimentsLiveTest do
              "[data-testid='ideas-list'] > [data-testid='idea-#{first_idea.id}']:first-child"
            )
   end
+
+  defp room_path(room_name), do: ~p"/ex/#{RoomKey.encode(room_name)}"
 end

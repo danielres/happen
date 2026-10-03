@@ -2,12 +2,13 @@ defmodule HappenWeb.ExperimentsLive do
   use HappenWeb, :live_view
   use LiveDelegate
 
+  alias Happen.RoomKey
+  alias HappenWeb.Components.Tabs
   alias HappenWeb.ExperimentsLive.Components
+  alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.Messages
   alias HappenWeb.ExperimentsLive.Presences
-  alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.User
-  alias HappenWeb.Components.Tabs
 
   delegate(:user, User)
   delegate(:messages, Messages)
@@ -15,14 +16,22 @@ defmodule HappenWeb.ExperimentsLive do
   delegate(:ideas, Ideas)
 
   @impl Phoenix.LiveView
-  def mount(params, session, socket) do
-    socket =
-      socket
-      |> assign(room: %{data: %{name: params["room_name"]}})
-      |> assign(active_tab: "ideas")
-      |> delegate_mount(params, session)
+  def mount(%{"room_name" => room_key} = params, session, socket) do
+    case RoomKey.decode(room_key) do
+      {:ok, room_name} ->
+        params = Map.put(params, "room_name", room_name)
 
-    {:ok, socket}
+        socket =
+          socket
+          |> assign(room: %{data: %{key: room_key, name: room_name}})
+          |> assign(active_tab: "ideas")
+          |> delegate_mount(params, session)
+
+        {:ok, socket}
+
+      :error ->
+        {:ok, redirect(socket, to: ~p"/ex")}
+    end
   end
 
   @impl Phoenix.LiveView

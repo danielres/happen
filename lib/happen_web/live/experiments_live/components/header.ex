@@ -11,7 +11,7 @@ defmodule HappenWeb.ExperimentsLive.Components.Header do
       "flex justify-between gap-4 items-end",
       "bg-base-200 px-4 py-3 rounded-lg grow"
     ]}>
-      <div class="font-bold opacity-40 truncate text-sm max-w-2/3">
+      <div data-testid="room-name" class="font-bold opacity-40 truncate text-sm max-w-2/3">
         {@room.name}
       </div>
 

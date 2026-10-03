@@ -36,7 +36,7 @@ defmodule HappenWeb.ExperimentsLive.User do
       <input
         type="hidden"
         name="guest[room_name]"
-        value={@room.name}
+        value={@room.key}
       />
 
       <.button type="submit">Continue</.button>
