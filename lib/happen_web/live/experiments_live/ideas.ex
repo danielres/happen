@@ -68,7 +68,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     socket =
       socket
       |> assign_ideas()
-      |> put_flash(:info, "Votes have been reset by #{user.name}")
+      |> Toast.put_toast(:info, "Votes have been reset by #{user.name}")
 
     {:noreply, socket}
   end

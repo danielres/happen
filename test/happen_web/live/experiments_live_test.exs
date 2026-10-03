@@ -190,8 +190,20 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
     refute has_element?(view, "[data-testid='ideas-tools-panel']")
     assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='false']")
-    assert has_element?(view, "#flash-info", "all votes reset by Test guest")
-    assert has_element?(second_view, "#flash-info", "all votes reset by Test guest")
+
+    assert has_element?(
+             view,
+             "#toast-group .toast-info",
+             "Votes have been reset by Test guest"
+           )
+
+    assert has_element?(view, "#toast-group[data-theme='inherit']")
+
+    assert has_element?(
+             second_view,
+             "#toast-group .toast-info",
+             "Votes have been reset by Test guest"
+           )
 
     view
     |> element("[data-testid='ideas-tools-button']")
