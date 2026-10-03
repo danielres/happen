@@ -24,9 +24,9 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import { hooks as colocatedHooks } from "phoenix-colocated/happen"
 import topbar from "../vendor/topbar"
-import Toast from "../../deps/toast/assets/js/toast.js";
 import { AutoAnimate } from "./hooks/AutoAnimate"
 import { CapitalizeFirstLetter } from "./hooks/CapitalizeFirstLetter";
+import { Toast } from "./hooks/Toast"
 
 import initLiveStash from "../../deps/live_stash/assets/js/live-stash.js";
 
