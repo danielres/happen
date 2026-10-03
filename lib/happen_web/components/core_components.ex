@@ -305,8 +305,8 @@ defmodule HappenWeb.CoreComponents do
   # Helper used by inputs to generate form errors
   defp error(assigns) do
     ~H"""
-    <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
-      <.icon name="hero-exclamation-circle" class="size-5" />
+    <p class="mt-1.5 flex gap-2 items-center text-sm text-base-content/50 font-semibold">
+      <.icon name="hero-exclamation-circle-mini" class="size-5 text-error" />
       {render_slot(@inner_block)}
     </p>
     """
