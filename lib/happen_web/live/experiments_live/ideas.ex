@@ -64,6 +64,15 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
     vote(params, socket, :down)
   end
 
+  def handle_info({:votes_reset, user}, socket) do
+    socket =
+      socket
+      |> assign_ideas()
+      |> put_flash(:info, "Votes have been reset by #{user.name}")
+
+    {:noreply, socket}
+  end
+
   def handle_info({event, _idea}, socket) when event in [:added, :updated] do
     {:noreply, assign_ideas(socket)}
   end

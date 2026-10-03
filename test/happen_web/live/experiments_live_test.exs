@@ -131,7 +131,16 @@ defmodule HappenWeb.ExperimentsLiveTest do
         "guest_since" => DateTime.now!("Etc/UTC")
       })
 
+    second_conn =
+      Phoenix.ConnTest.build_conn()
+      |> init_test_session(%{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Second guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
     {:ok, view, _html} = live(conn, ~p"/ex/#{room_name}")
+    {:ok, second_view, _html} = live(second_conn, ~p"/ex/#{room_name}")
 
     view
     |> form("#ideas-body-form", %{"body" => "Make it happen"})
@@ -176,14 +185,13 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(view, "[data-testid='ideas-tools-panel']", "Are you sure?")
 
     view
-    |> element("[data-testid='ideas-tools-button']")
+    |> element("[data-testid='ideas-tools-reset-all-votes-confirm']")
     |> render_click()
 
-    view
-    |> element("[data-testid^='ideas-upvote-']")
-    |> render_click()
-
+    refute has_element?(view, "[data-testid='ideas-tools-panel']")
     assert has_element?(view, "[data-testid^='ideas-upvote-'][aria-pressed='false']")
+    assert has_element?(view, "#flash-info", "all votes reset by Test guest")
+    assert has_element?(second_view, "#flash-info", "all votes reset by Test guest")
 
     view
     |> element("[data-testid='ideas-tools-button']")

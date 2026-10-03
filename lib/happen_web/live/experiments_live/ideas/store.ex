@@ -22,6 +22,10 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Store do
     GenServer.call(__MODULE__, {:vote, room_name, idea_id, user, direction})
   end
 
+  def reset_all_votes(room_name, user) when is_map(user) do
+    GenServer.call(__MODULE__, {:reset_all_votes, room_name, user})
+  end
+
   def subscribe(room_name) do
     Phoenix.PubSub.subscribe(Happen.PubSub, topic(room_name))
   end
@@ -70,6 +74,22 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Store do
         broadcast(room_name, {:updated, idea})
 
         {:reply, {:ok, idea}, rooms}
+    end
+  end
+
+  @impl true
+  def handle_call({:reset_all_votes, room_name, user}, _from, rooms) do
+    case Map.fetch(rooms, room_name) do
+      :error ->
+        {:reply, :ok, rooms}
+
+      {:ok, ideas} ->
+        ideas = Enum.map(ideas, &Map.put(&1, :votes, %{}))
+        rooms = Map.put(rooms, room_name, ideas)
+
+        broadcast(room_name, {:votes_reset, user})
+
+        {:reply, :ok, rooms}
     end
   end
 

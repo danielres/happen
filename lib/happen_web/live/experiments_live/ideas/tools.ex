@@ -2,6 +2,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
   use HappenWeb, :html
   use LiveDelegate, path: [:ideas, :tools]
 
+  alias HappenWeb.ExperimentsLive.Ideas.Store
   alias HappenWeb.ExperimentsLive.Ideas.Utils
 
   def on_mount(_params, _session, socket) do
@@ -26,6 +27,14 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
 
   def handle_event("remove_all_ideas_start", _params, socket) do
     {:noreply, socket |> delegate_assign(:remove_all_ideas)}
+  end
+
+  def handle_event("reset_all_votes", _params, socket) do
+    room_name = socket.assigns.room.data.name
+    user = socket.assigns.user.data
+
+    :ok = Store.reset_all_votes(room_name, user)
+    {:noreply, socket |> delegate_assign(nil)}
   end
 
   attr :active?, :boolean, required: true
@@ -59,7 +68,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
       data-testid={delegate_dom_id("panel")}
       class={[
         "border-2 rounded-box p-2 mb-2",
-        @tools != :remove_all_ideas && "border-warning/30 bg-warning/10",
+        @tools != :remove_all_ideas && "border-warning/30 bg-warning/3",
         @tools == :remove_all_ideas && "border-error/30 bg-error/10",
         "transition"
       ]}
@@ -128,7 +137,12 @@ defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
               class="text-warning"
             >
               <p>Are you sure?</p>
-              <button class="btn btn-warning" type="button">
+              <button
+                data-testid={delegate_dom_id("reset-all-votes-confirm")}
+                class="btn btn-warning"
+                type="button"
+                phx-click={delegate_event("reset_all_votes")}
+              >
                 Reset all votes
               </button>
             </div>
