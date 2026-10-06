@@ -121,7 +121,7 @@ defmodule HappenWeb.RoomLive do
               <Tabs.count count={length(@presences)} data-testid="presences-count" />
             </:indicator>
             <.section>
-              <:title>Online now</:title>
+              <:title>Available now</:title>
               <Presences.render presences={@presences} />
             </.section>
           </Tabs.tab>
