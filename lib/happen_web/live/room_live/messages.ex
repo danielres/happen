@@ -82,27 +82,34 @@ defmodule HappenWeb.RoomLive.Messages do
   end
 
   attr :messages, :map, required: true
+
+  def render_form(assigns) do
+    ~H"""
+    <.form
+      for={@messages.form}
+      id={delegate_dom_id("body-form")}
+      phx-change={delegate_event("change")}
+      phx-submit={delegate_event("add")}
+    >
+      <.input
+        autocomplete="off"
+        phx-mounted={JS.focus()}
+        field={@messages.form[:body]}
+        placeholder="Say something"
+        required
+        class="input input-info w-full"
+      />
+    </.form>
+    """
+  end
+
+  attr :messages, :map, required: true
   attr :stream, :list, required: true
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="space-y-2">
-      <.form
-        for={@messages.form}
-        id={delegate_dom_id("body-form")}
-        phx-change={delegate_event("change")}
-        phx-submit={delegate_event("add")}
-      >
-        <.input
-          autocomplete="off"
-          field={@messages.form[:body]}
-          placeholder="Say something"
-          required
-          class="input input-info w-full"
-        />
-      </.form>
-
+    <div>
       <ul
         id="messages"
         class="space-y-1"

@@ -69,6 +69,10 @@ defmodule HappenWeb.RoomLiveTest do
     {:ok, view, _html} = live(conn, room_path(room_name))
 
     view
+    |> element("[data-testid='messages-tab']")
+    |> render_click()
+
+    view
     |> form("#messages-body-form", %{"body" => "Hello"})
     |> render_change()
 
@@ -104,6 +108,10 @@ defmodule HappenWeb.RoomLiveTest do
 
     {:ok, observer_view, _html} = live(observer_conn, room_path(room_name))
     {:ok, author_view, _html} = live(author_conn, room_path(room_name))
+
+    author_view
+    |> element("[data-testid='messages-tab']")
+    |> render_click()
 
     author_view
     |> form("#messages-body-form", %{"body" => "First message"})

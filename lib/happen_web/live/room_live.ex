@@ -105,6 +105,7 @@ defmodule HappenWeb.RoomLive do
 
             <.section>
               <:title>Ephemeral chit-chat</:title>
+              <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
               <Messages.render messages={@messages} stream={@streams.messages} />
             </.section>
           </Tabs.tab>
