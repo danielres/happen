@@ -14,16 +14,6 @@ defmodule HappenWeb.AccessControllerTest do
     assert get_resp_header(conn, "referrer-policy") == ["no-referrer"]
   end
 
-  test "redeems a combined invitation and room URL", %{conn: conn} do
-    {invitation, token} = invitation_with_token()
-    room_id = Ash.UUID.generate()
-
-    conn = get(conn, ~p"/invite/#{token}/r/#{room_id}")
-
-    assert redirected_to(conn) == ~p"/r/#{room_id}"
-    assert get_session(conn, :invitation_id) == invitation.id
-  end
-
   test "returns a generic 404 for an invalid invitation", %{conn: conn} do
     conn = get(conn, ~p"/invite/not-a-valid-token")
 

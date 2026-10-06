@@ -7,10 +7,6 @@ defmodule HappenWeb.AccessController do
     redeem_and_redirect(conn, token, ~p"/ex")
   end
 
-  def redeem_room(conn, %{"room_id" => room_id, "token" => token}) do
-    redeem_and_redirect(conn, token, ~p"/r/#{room_id}")
-  end
-
   def not_found(conn, _params) do
     conn
     |> protect_secret()

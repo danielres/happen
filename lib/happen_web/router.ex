@@ -49,8 +49,6 @@ defmodule HappenWeb.Router do
       on_mount: [{HappenWeb.LiveAccess, :require}] do
       live "/ex", ExperimentsLiveHome
       live "/ex/:room_name", ExperimentsLive
-      live "/", HomeLive
-      live "/r/:room_id", RoomLive
     end
 
     live "/_", AdminLive
@@ -59,7 +57,6 @@ defmodule HappenWeb.Router do
     delete "/_/logout", AdminSessionController, :logout
 
     get "/invite/:token", AccessController, :redeem
-    get "/invite/:token/r/:room_id", AccessController, :redeem_room
     get "/404", AccessController, :not_found
 
     auth_routes AuthController, Happen.Accounts.User, path: "/auth"

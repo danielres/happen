@@ -3,7 +3,7 @@ defmodule HappenWeb.AuthController do
   use AshAuthentication.Phoenix.Controller
 
   def success(conn, activity, user, _token) do
-    return_to = get_session(conn, :return_to) || ~p"/"
+    return_to = get_session(conn, :return_to) || ~p"/ex"
 
     message =
       case activity do
@@ -54,7 +54,7 @@ defmodule HappenWeb.AuthController do
   end
 
   def sign_out(conn, _params) do
-    return_to = get_session(conn, :return_to) || ~p"/"
+    return_to = get_session(conn, :return_to) || ~p"/ex"
 
     conn
     |> clear_session(:happen)
