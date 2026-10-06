@@ -101,6 +101,7 @@ defmodule HappenWeb.ExperimentsLive.Ideas do
   attr :ideas, :list, required: true
   attr :user_id, :string, required: true
 
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <ul

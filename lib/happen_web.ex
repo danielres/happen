@@ -64,14 +64,6 @@ defmodule HappenWeb do
     end
   end
 
-  def connected_component do
-    quote do
-      use ConnectedComponent
-
-      unquote(html_helpers())
-    end
-  end
-
   def html do
     quote do
       use Phoenix.Component

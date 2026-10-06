@@ -12,9 +12,6 @@ import Config
 # behavior and ensures a seamless upgrade. See the backwards compatibility
 # guide for an explanation of each setting:
 # https://hexdocs.pm/ash/backwards-compatibility-config.html
-# config :live_stash, adapters: [LiveStash.Adapters.ETS, LiveStash.Adapters.BrowserMemory, LiveStash.Adapters.Mnesia]
-config :live_stash, adapters: [LiveStash.Adapters.BrowserMemory]
-
 config :ash,
   allow_forbidden_field_for_relationships_by_default: true,
   include_embedded_source_by_default?: false,
