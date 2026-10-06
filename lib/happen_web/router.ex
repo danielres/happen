@@ -42,13 +42,13 @@ defmodule HappenWeb.Router do
   scope "/", HappenWeb do
     pipe_through :browser
 
-    live "/ex", ExperimentsLiveHome
-    live "/ex/:room_name", ExperimentsLive
     post "/guest", GuestSessionController, :create
     get "/guest/logout", GuestSessionController, :delete
 
     live_session :invitation_access,
       on_mount: [{HappenWeb.LiveAccess, :require}] do
+      live "/ex", ExperimentsLiveHome
+      live "/ex/:room_name", ExperimentsLive
       live "/", HomeLive
       live "/r/:room_id", RoomLive
     end

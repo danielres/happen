@@ -3,14 +3,20 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
   import Phoenix.LiveViewTest
 
+  alias Happen.Accounts
   alias Happen.RoomKey
   alias HappenWeb.ExperimentsLive.Ideas.Store, as: IdeasStore
 
-  test "decodes the room key into the room name", %{conn: conn} do
+  setup do
+    {:ok, invitation} = Accounts.create_invitation()
+    %{invitation_id: invitation.id}
+  end
+
+  test "decodes the room key into the room name", %{conn: conn, invitation_id: invitation_id} do
     room_name = "Café room"
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -21,14 +27,22 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(view, "[data-testid='room-name']", room_name)
   end
 
-  test "redirects malformed room keys to the room form", %{conn: conn} do
+  test "redirects malformed room keys to the room form", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_form_path = ~p"/ex"
+    conn = invitation_session(conn, invitation_id)
 
     assert {:error, {:redirect, %{to: ^room_form_path}}} = live(conn, "/ex/invalid!")
   end
 
-  test "preserves the room key when creating a guest session", %{conn: conn} do
+  test "preserves the room key when creating a guest session", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_key = RoomKey.encode("Café room")
+    conn = invitation_session(conn, invitation_id)
 
     {:ok, view, _html} = live(conn, ~p"/ex/#{room_key}")
 
@@ -38,11 +52,14 @@ defmodule HappenWeb.ExperimentsLiveTest do
            )
   end
 
-  test "delegates message form events and store broadcasts", %{conn: conn} do
+  test "delegates message form events and store broadcasts", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_name = "messages-#{System.unique_integer([:positive])}"
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -63,11 +80,11 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(view, "#messages-body-form input[value='']")
   end
 
-  test "delegates nested idea tools events", %{conn: conn} do
+  test "delegates nested idea tools events", %{conn: conn, invitation_id: invitation_id} do
     room_name = "idea-tools-#{System.unique_integer([:positive])}"
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -106,13 +123,16 @@ defmodule HappenWeb.ExperimentsLiveTest do
     refute has_element?(view, "[data-testid='ideas-tools-panel']")
   end
 
-  test "assigns room hues to the current users' header badges", %{conn: conn} do
+  test "assigns room hues to the current users' header badges", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_name = "hues-#{System.unique_integer([:positive])}"
     since = DateTime.now!("Etc/UTC")
     first_guest_id = Ash.UUID.generate()
 
     first_conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => first_guest_id,
         "guest_name" => "First guest",
         "guest_since" => since
@@ -120,7 +140,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
     second_conn =
       Phoenix.ConnTest.build_conn()
-      |> init_test_session(%{
+      |> invitation_session(invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Second guest",
         "guest_since" => DateTime.add(since, 1, :second)
@@ -135,11 +155,14 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(second_view, "[data-testid='current-user-badge'][style*='220']")
   end
 
-  test "delegates the leave event through presences", %{conn: conn} do
+  test "delegates the leave event through presences", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_name = "leave-#{System.unique_integer([:positive])}"
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -154,11 +177,14 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert_redirect(view, ~p"/guest/logout")
   end
 
-  test "adds an idea and toggles the current user's vote", %{conn: conn} do
+  test "adds an idea and toggles the current user's vote", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
     room_name = "ideas-#{System.unique_integer([:positive])}"
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -166,7 +192,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
 
     second_conn =
       Phoenix.ConnTest.build_conn()
-      |> init_test_session(%{
+      |> invitation_session(invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Second guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -265,12 +291,12 @@ defmodule HappenWeb.ExperimentsLiveTest do
            )
   end
 
-  test "sorts ideas by score", %{conn: conn} do
+  test "sorts ideas by score", %{conn: conn, invitation_id: invitation_id} do
     room_name = "sorted-ideas-#{System.unique_integer([:positive])}"
     author = %{id: Ash.UUID.generate(), name: "Author", hue: 40}
 
     conn =
-      init_test_session(conn, %{
+      invitation_session(conn, invitation_id, %{
         "guest_id" => Ash.UUID.generate(),
         "guest_name" => "Test guest",
         "guest_since" => DateTime.now!("Etc/UTC")
@@ -296,6 +322,10 @@ defmodule HappenWeb.ExperimentsLiveTest do
              view,
              "[data-testid='ideas-list'] > [data-testid='idea-#{first_idea.id}']:first-child"
            )
+  end
+
+  defp invitation_session(conn, invitation_id, session \\ %{}) do
+    init_test_session(conn, Map.put(session, "invitation_id", invitation_id))
   end
 
   defp room_path(room_name), do: ~p"/ex/#{RoomKey.encode(room_name)}"

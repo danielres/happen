@@ -3,7 +3,15 @@ defmodule HappenWeb.ExperimentsLiveHomeTest do
 
   import Phoenix.LiveViewTest
 
+  alias Happen.Accounts
   alias Happen.RoomKey
+
+  setup %{conn: conn} do
+    {:ok, invitation} = Accounts.create_invitation()
+    conn = init_test_session(conn, %{"invitation_id" => invitation.id})
+
+    %{conn: conn}
+  end
 
   test "opens a room using its encoded name", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/ex")

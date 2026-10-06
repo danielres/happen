@@ -4,7 +4,7 @@ defmodule HappenWeb.AccessController do
   alias Happen.Accounts
 
   def redeem(conn, %{"token" => token}) do
-    redeem_and_redirect(conn, token, ~p"/")
+    redeem_and_redirect(conn, token, ~p"/ex")
   end
 
   def redeem_room(conn, %{"room_id" => room_id, "token" => token}) do
