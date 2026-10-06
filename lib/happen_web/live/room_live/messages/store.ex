@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Messages.Store do
+defmodule HappenWeb.RoomLive.Messages.Store do
   use GenServer
 
   def max_count, do: 15

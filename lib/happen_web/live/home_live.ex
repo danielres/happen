@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLiveHome do
+defmodule HappenWeb.HomeLive do
   use HappenWeb, :live_view
 
   alias Ecto.Changeset
@@ -30,7 +30,7 @@ defmodule HappenWeb.ExperimentsLiveHome do
     case params |> room_changeset() |> Changeset.apply_action(:insert) do
       {:ok, %{name: room_name}} ->
         room_key = RoomKey.encode(room_name)
-        {:noreply, push_navigate(socket, to: ~p"/ex/#{room_key}")}
+        {:noreply, push_navigate(socket, to: ~p"/#{room_key}")}
 
       {:error, changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset, as: :room))}

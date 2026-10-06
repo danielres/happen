@@ -1,7 +1,7 @@
-defmodule HappenWeb.ExperimentsLive.Messages.StoreTest do
+defmodule HappenWeb.RoomLive.Messages.StoreTest do
   use ExUnit.Case, async: false
 
-  alias HappenWeb.ExperimentsLive.Messages.Store
+  alias HappenWeb.RoomLive.Messages.Store
 
   test "keeps messages and broadcasts isolated by room" do
     first_room = "first-room-#{System.unique_integer([:positive])}"

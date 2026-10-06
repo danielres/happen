@@ -1,11 +1,11 @@
-defmodule HappenWeb.ExperimentsLive.Messages do
+defmodule HappenWeb.RoomLive.Messages do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:messages]
 
-  alias HappenWeb.ExperimentsLive
-  alias HappenWeb.ExperimentsLive.Messages.Notification
-  alias HappenWeb.ExperimentsLive.Messages.Store
-  alias ExperimentsLive.User
+  alias HappenWeb.RoomLive
+  alias HappenWeb.RoomLive.Messages.Notification
+  alias HappenWeb.RoomLive.Messages.Store
+  alias RoomLive.User
 
   delegate(:notification, Notification, events: false)
 

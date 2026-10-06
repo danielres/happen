@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Utils do
+defmodule HappenWeb.RoomLive.Ideas.Utils do
   def score(idea) do
     vote_count(idea, :up) - vote_count(idea, :down)
   end

@@ -1,9 +1,9 @@
-defmodule HappenWeb.ExperimentsLive.Components.Header do
+defmodule HappenWeb.RoomLive.Components.Header do
   use HappenWeb, :html
 
   alias HappenWeb.Components.Dropdown
-  alias HappenWeb.ExperimentsLive.Presences
-  alias HappenWeb.ExperimentsLive.User
+  alias HappenWeb.RoomLive.Presences
+  alias HappenWeb.RoomLive.User
 
   def render(assigns) do
     ~H"""

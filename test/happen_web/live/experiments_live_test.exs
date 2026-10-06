@@ -1,12 +1,12 @@
-defmodule HappenWeb.ExperimentsLiveTest do
+defmodule HappenWeb.RoomLiveTest do
   use HappenWeb.ConnCase, async: false
 
   import Phoenix.LiveViewTest
 
   alias Happen.Accounts
   alias Happen.RoomKey
-  alias HappenWeb.ExperimentsLive.Ideas.Store, as: IdeasStore
-  alias HappenWeb.ExperimentsLive.Messages.Store, as: MessagesStore
+  alias HappenWeb.RoomLive.Ideas.Store, as: IdeasStore
+  alias HappenWeb.RoomLive.Messages.Store, as: MessagesStore
 
   setup do
     {:ok, invitation} = Accounts.create_invitation()
@@ -32,10 +32,10 @@ defmodule HappenWeb.ExperimentsLiveTest do
     conn: conn,
     invitation_id: invitation_id
   } do
-    room_form_path = ~p"/ex"
+    room_form_path = ~p"/"
     conn = invitation_session(conn, invitation_id)
 
-    assert {:error, {:redirect, %{to: ^room_form_path}}} = live(conn, "/ex/invalid!")
+    assert {:error, {:redirect, %{to: ^room_form_path}}} = live(conn, "/invalid!")
   end
 
   test "preserves the room key when creating a guest session", %{
@@ -45,7 +45,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
     room_key = RoomKey.encode("Café room")
     conn = invitation_session(conn, invitation_id)
 
-    {:ok, view, _html} = live(conn, ~p"/ex/#{room_key}")
+    {:ok, view, _html} = live(conn, ~p"/#{room_key}")
 
     assert has_element?(
              view,
@@ -451,5 +451,5 @@ defmodule HappenWeb.ExperimentsLiveTest do
     init_test_session(conn, Map.put(session, "invitation_id", invitation_id))
   end
 
-  defp room_path(room_name), do: ~p"/ex/#{RoomKey.encode(room_name)}"
+  defp room_path(room_name), do: ~p"/#{RoomKey.encode(room_name)}"
 end

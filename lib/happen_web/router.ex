@@ -47,8 +47,8 @@ defmodule HappenWeb.Router do
 
     live_session :invitation_access,
       on_mount: [{HappenWeb.LiveAccess, :require}] do
-      live "/ex", ExperimentsLiveHome
-      live "/ex/:room_name", ExperimentsLive
+      live "/", HomeLive
+      live "/:room_key", RoomLive
     end
 
     live "/_", AdminLive

@@ -7,12 +7,12 @@ defmodule HappenWeb.GuestSessionController do
     conn
     |> put_session(:guest_name, name)
     |> put_session(:guest_since, DateTime.now!("Etc/UTC"))
-    |> redirect(to: ~p"/ex/#{room_key}")
+    |> redirect(to: ~p"/#{room_key}")
   end
 
   def delete(conn, _params) do
     conn
     |> delete_session(:guest_name)
-    |> redirect(to: ~p"/ex")
+    |> redirect(to: ~p"/")
   end
 end

@@ -2,7 +2,7 @@ defmodule HappenWeb.Plugs.GuestIdTest do
   use HappenWeb.ConnCase, async: true
 
   test "assigns a new guest ID and stores it in a signed cookie", %{conn: conn} do
-    conn = get(conn, ~p"/ex")
+    conn = get(conn, ~p"/")
 
     guest_id = conn.assigns.guest_id
 
@@ -23,13 +23,13 @@ defmodule HappenWeb.Plugs.GuestIdTest do
   end
 
   test "reuses the guest ID from the signed cookie", %{conn: conn} do
-    first_conn = get(conn, ~p"/ex")
+    first_conn = get(conn, ~p"/")
     guest_id = first_conn.assigns.guest_id
 
     second_conn =
       first_conn
       |> recycle()
-      |> get(~p"/ex")
+      |> get(~p"/")
 
     assert second_conn.assigns.guest_id == guest_id
     assert get_session(second_conn, :guest_id) == guest_id

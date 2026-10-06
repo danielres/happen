@@ -8,7 +8,7 @@ defmodule HappenWeb.AccessControllerTest do
 
     conn = get(conn, ~p"/invite/#{token}")
 
-    assert redirected_to(conn) == ~p"/ex"
+    assert redirected_to(conn) == ~p"/"
     assert get_session(conn, :invitation_id) == invitation.id
     assert get_resp_header(conn, "cache-control") == ["no-store"]
     assert get_resp_header(conn, "referrer-policy") == ["no-referrer"]

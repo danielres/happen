@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Presences do
+defmodule HappenWeb.RoomLive.Presences do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:presences]
 
@@ -83,7 +83,7 @@ defmodule HappenWeb.ExperimentsLive.Presences do
     ~H"""
     <ul class="flex gap-2">
       <li :for={{_pid, presence} <- @presences}>
-        <HappenWeb.ExperimentsLive.User.badge user={presence} />
+        <HappenWeb.RoomLive.User.badge user={presence} />
       </li>
     </ul>
     """

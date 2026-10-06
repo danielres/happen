@@ -1,11 +1,11 @@
-defmodule HappenWeb.ExperimentsLive.Ideas do
+defmodule HappenWeb.RoomLive.Ideas do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:ideas]
 
-  alias HappenWeb.ExperimentsLive.Ideas.Tools
-  alias HappenWeb.ExperimentsLive.Ideas.Components
-  alias HappenWeb.ExperimentsLive.Ideas.Store
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
+  alias HappenWeb.RoomLive.Ideas.Tools
+  alias HappenWeb.RoomLive.Ideas.Components
+  alias HappenWeb.RoomLive.Ideas.Store
+  alias HappenWeb.RoomLive.Ideas.Utils
 
   delegate(:tools, Tools)
 

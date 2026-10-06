@@ -1,8 +1,8 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Components.VotersList do
+defmodule HappenWeb.RoomLive.Ideas.Components.VotersList do
   use HappenWeb, :html
 
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
-  alias HappenWeb.ExperimentsLive.User
+  alias HappenWeb.RoomLive.Ideas.Utils
+  alias HappenWeb.RoomLive.User
 
   attr :direction, :atom, values: [:up, :down], required: true
   attr :idea, :map, required: true

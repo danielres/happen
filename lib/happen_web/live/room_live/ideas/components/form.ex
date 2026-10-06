@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Components.Form do
+defmodule HappenWeb.RoomLive.Ideas.Components.Form do
   use HappenWeb, :html
   use LiveDelegate, path: [:ideas]
 

@@ -7,14 +7,14 @@ defmodule HappenWeb.InvitationAccessTest do
   alias Happen.RoomKey
 
   test "the app rejects a browser without invitation access", %{conn: conn} do
-    assert {:error, {:redirect, %{to: "/404"}}} = live(conn, ~p"/ex")
+    assert {:error, {:redirect, %{to: "/404"}}} = live(conn, ~p"/")
   end
 
   test "an enabled invitation grants access to the app", %{conn: conn} do
     {:ok, invitation} = Accounts.create_invitation()
     conn = init_test_session(conn, %{"invitation_id" => invitation.id})
 
-    assert {:ok, view, _html} = live(conn, ~p"/ex")
+    assert {:ok, view, _html} = live(conn, ~p"/")
     assert has_element?(view, "[data-testid='room-form']")
   end
 
@@ -24,7 +24,7 @@ defmodule HappenWeb.InvitationAccessTest do
     {:ok, invitation} = Accounts.create_invitation()
 
     invited_conn = init_test_session(conn, %{"invitation_id" => invitation.id})
-    room_path = ~p"/ex/#{RoomKey.encode("Integration test room")}"
+    room_path = ~p"/#{RoomKey.encode("Integration test room")}"
     {:ok, invited_view, _html} = live(invited_conn, room_path)
 
     admin_conn = init_test_session(build_conn(), %{"admin_id" => admin.id})

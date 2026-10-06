@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Store do
+defmodule HappenWeb.RoomLive.Ideas.Store do
   use GenServer
 
   def start_link(_opts \\ []) do

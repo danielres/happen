@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLiveHomeTest do
+defmodule HappenWeb.HomeLiveTest do
   use HappenWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
@@ -14,7 +14,7 @@ defmodule HappenWeb.ExperimentsLiveHomeTest do
   end
 
   test "opens a room using its encoded name", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/ex")
+    {:ok, view, _html} = live(conn, ~p"/")
 
     view
     |> form("[data-testid='room-form']", %{
@@ -23,11 +23,11 @@ defmodule HappenWeb.ExperimentsLiveHomeTest do
     |> render_submit()
 
     room_key = RoomKey.encode("Café room")
-    assert_redirect(view, ~p"/ex/#{room_key}")
+    assert_redirect(view, ~p"/#{room_key}")
   end
 
   test "disables submission while the room name is invalid", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/ex")
+    {:ok, view, _html} = live(conn, ~p"/")
 
     assert has_element?(view, "[data-testid='room-form'] button[type='submit'][disabled]")
 
@@ -45,7 +45,7 @@ defmodule HappenWeb.ExperimentsLiveHomeTest do
   end
 
   test "shows errors after submission and clears them while editing", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/ex")
+    {:ok, view, _html} = live(conn, ~p"/")
 
     view
     |> form("[data-testid='room-form']", %{"room" => %{"name" => "abc"}})

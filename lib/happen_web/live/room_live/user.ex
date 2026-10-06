@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.User do
+defmodule HappenWeb.RoomLive.User do
   use HappenWeb, :html
 
   def on_mount(_params, session, socket) do

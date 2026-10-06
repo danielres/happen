@@ -1,8 +1,8 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Components.VotingButtons do
+defmodule HappenWeb.RoomLive.Ideas.Components.VotingButtons do
   use HappenWeb, :html
   use LiveDelegate, path: [:ideas]
 
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
+  alias HappenWeb.RoomLive.Ideas.Utils
 
   attr :idea, :map, required: true
   attr :user_id, :string, required: true

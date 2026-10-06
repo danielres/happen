@@ -1,8 +1,8 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Components.Idea do
+defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
   use HappenWeb, :html
 
-  alias HappenWeb.ExperimentsLive.Ideas.Components
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
+  alias HappenWeb.RoomLive.Ideas.Components
+  alias HappenWeb.RoomLive.Ideas.Utils
 
   attr :idea, :map, required: true
 

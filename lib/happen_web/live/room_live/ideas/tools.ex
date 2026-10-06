@@ -1,9 +1,9 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.Tools do
+defmodule HappenWeb.RoomLive.Ideas.Tools do
   use HappenWeb, :html
   use LiveDelegate, path: [:ideas, :tools]
 
-  alias HappenWeb.ExperimentsLive.Ideas.Store
-  alias HappenWeb.ExperimentsLive.Ideas.Utils
+  alias HappenWeb.RoomLive.Ideas.Store
+  alias HappenWeb.RoomLive.Ideas.Utils
 
   def on_mount(_params, _session, socket) do
     socket |> delegate_assign(nil)

@@ -1,7 +1,7 @@
-defmodule HappenWeb.ExperimentsLive.Ideas.StoreTest do
+defmodule HappenWeb.RoomLive.Ideas.StoreTest do
   use ExUnit.Case, async: false
 
-  alias HappenWeb.ExperimentsLive.Ideas.Store
+  alias HappenWeb.RoomLive.Ideas.Store
 
   test "toggles and switches one vote per user" do
     room_name = "ideas-#{System.unique_integer([:positive])}"

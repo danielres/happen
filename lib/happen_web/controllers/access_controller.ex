@@ -4,7 +4,7 @@ defmodule HappenWeb.AccessController do
   alias Happen.Accounts
 
   def redeem(conn, %{"token" => token}) do
-    redeem_and_redirect(conn, token, ~p"/ex")
+    redeem_and_redirect(conn, token, ~p"/")
   end
 
   def not_found(conn, _params) do

@@ -1,4 +1,4 @@
-defmodule HappenWeb.ExperimentsLive.Messages.Notification do
+defmodule HappenWeb.RoomLive.Messages.Notification do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:messages, :notification]
 

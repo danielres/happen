@@ -18,8 +18,8 @@ defmodule Happen.Application do
       HappenWeb.Endpoint,
       {AshAuthentication.Supervisor, [otp_app: :happen]},
       {Group, name: :happen},
-      HappenWeb.ExperimentsLive.Messages.Store,
-      HappenWeb.ExperimentsLive.Ideas.Store
+      HappenWeb.RoomLive.Messages.Store,
+      HappenWeb.RoomLive.Ideas.Store
     ]
 
     # See https://elixir.hexdocs.pm/Supervisor.html
