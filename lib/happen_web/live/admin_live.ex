@@ -231,6 +231,7 @@ defmodule HappenWeb.AdminLive do
                     :if={!invitation.disabled_at}
                     id={"disable-invitation-#{invitation.id}"}
                     class="btn btn-success btn-sm btn-circle tooltip tooltip-success tooltip-right"
+                    data-testid="disable-invitation"
                     data-tip="disable invitation"
                     phx-click="disable-invitation"
                     phx-value-id={invitation.id}
