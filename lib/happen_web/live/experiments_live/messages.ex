@@ -3,12 +3,16 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   use LiveDelegate, path: [:messages]
 
   alias HappenWeb.ExperimentsLive
+  alias HappenWeb.ExperimentsLive.Messages.Notification
   alias HappenWeb.ExperimentsLive.Messages.Store
   alias ExperimentsLive.User
 
-  def on_mount(_params, _session, socket) do
+  delegate(:notification, Notification, events: false)
+
+  def on_mount(params, session, socket) do
     socket
     |> delegate_assign(%{count: 0, ttl: Store.ttl()})
+    |> delegate_mount(params, session)
     |> assign_form()
     |> assign_stream()
     |> subscribe()
@@ -55,6 +59,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
       socket
       |> stream_insert(message)
       |> assign_count()
+      |> Notification.show(message)
 
     {:noreply, socket}
   end
@@ -79,6 +84,7 @@ defmodule HappenWeb.ExperimentsLive.Messages do
   attr :messages, :map, required: true
   attr :stream, :list, required: true
 
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <div class="space-y-2">

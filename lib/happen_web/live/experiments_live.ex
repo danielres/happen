@@ -7,6 +7,7 @@ defmodule HappenWeb.ExperimentsLive do
   alias HappenWeb.ExperimentsLive.Components
   alias HappenWeb.ExperimentsLive.Ideas
   alias HappenWeb.ExperimentsLive.Messages
+  alias HappenWeb.ExperimentsLive.Messages.Notification
   alias HappenWeb.ExperimentsLive.Presences
   alias HappenWeb.ExperimentsLive.User
 
@@ -37,7 +38,7 @@ defmodule HappenWeb.ExperimentsLive do
   @impl Phoenix.LiveView
   def handle_event("tabs:select", %{"tab" => tab}, socket)
       when tab in ["ideas", "messages", "presences"] do
-    {:noreply, socket |> assign(:active_tab, tab)}
+    {:noreply, assign(socket, :active_tab, tab)}
   end
 
   @impl Phoenix.LiveView
@@ -88,11 +89,16 @@ defmodule HappenWeb.ExperimentsLive do
 
           <Tabs.tab
             active?={@active_tab == "messages"}
+            data-testid="messages-tab"
             name="main"
             phx-click="tabs:select"
             phx-value-tab="messages"
           >
-            <:label><.icon name="hero-chat-bubble-left-mini" class="size-5" /></:label>
+            <:label>
+              <Notification.render notification={@messages.notification}>
+                <.icon name="hero-chat-bubble-left-mini" class="size-5" />
+              </Notification.render>
+            </:label>
             <:indicator>
               <Tabs.count count={@messages.count} data-testid="messages-count" />
             </:indicator>

@@ -6,6 +6,7 @@ defmodule HappenWeb.ExperimentsLiveTest do
   alias Happen.Accounts
   alias Happen.RoomKey
   alias HappenWeb.ExperimentsLive.Ideas.Store, as: IdeasStore
+  alias HappenWeb.ExperimentsLive.Messages.Store, as: MessagesStore
 
   setup do
     {:ok, invitation} = Accounts.create_invitation()
@@ -78,6 +79,128 @@ defmodule HappenWeb.ExperimentsLiveTest do
     assert has_element?(view, "[data-testid='messages-count']", "1")
     assert has_element?(view, "#messages > li")
     assert has_element?(view, "#messages-body-form input[value='']")
+  end
+
+  test "shows only the latest message notification outside the messages tab", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
+    room_name = "notifications-#{System.unique_integer([:positive])}"
+
+    observer_conn =
+      invitation_session(conn, invitation_id, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Observer",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    author_conn =
+      Phoenix.ConnTest.build_conn()
+      |> invitation_session(invitation_id, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Author",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, observer_view, _html} = live(observer_conn, room_path(room_name))
+    {:ok, author_view, _html} = live(author_conn, room_path(room_name))
+
+    author_view
+    |> form("#messages-body-form", %{"body" => "First message"})
+    |> render_submit()
+
+    [first_message] = MessagesStore.list_messages(room_name)
+
+    assert has_element?(
+             observer_view,
+             "[data-testid='message-notification']",
+             "First message"
+           )
+
+    assert has_element?(
+             observer_view,
+             "[data-testid='message-notification-trigger'].tooltip-open"
+           )
+
+    assert has_element?(
+             observer_view,
+             "[data-testid='message-notification']",
+             "Author"
+           )
+
+    author_view
+    |> form("#messages-body-form", %{"body" => "Second message"})
+    |> render_submit()
+
+    second_message = MessagesStore.list_messages(room_name) |> List.last()
+
+    refute has_element?(
+             observer_view,
+             "[data-testid='message-notification']",
+             "First message"
+           )
+
+    assert has_element?(
+             observer_view,
+             "[data-testid='message-notification']",
+             "Second message"
+           )
+
+    send(observer_view.pid, {:messages, {:notification, {:dismiss, first_message.id}}})
+    _ = :sys.get_state(observer_view.pid)
+
+    assert has_element?(
+             observer_view,
+             "[data-testid='message-notification']",
+             "Second message"
+           )
+
+    send(observer_view.pid, {:messages, {:notification, {:dismiss, second_message.id}}})
+    _ = :sys.get_state(observer_view.pid)
+
+    assert has_element?(observer_view, "[data-testid='message-notification']", "Second message")
+
+    refute has_element?(
+             observer_view,
+             "[data-testid='message-notification-trigger'].tooltip-open"
+           )
+
+    send(observer_view.pid, {:messages, {:notification, {:clear, second_message.id}}})
+    _ = :sys.get_state(observer_view.pid)
+
+    refute has_element?(observer_view, "[data-testid='message-notification']")
+
+    author_view
+    |> form("#messages-body-form", %{"body" => "Third message"})
+    |> render_submit()
+
+    assert has_element?(observer_view, "[data-testid='message-notification']")
+    third_message = MessagesStore.list_messages(room_name) |> List.last()
+
+    observer_view
+    |> element("[data-testid='messages-tab']")
+    |> render_click()
+
+    refute has_element?(
+             observer_view,
+             "[data-testid='message-notification-trigger'].tooltip-open"
+           )
+
+    send(observer_view.pid, {:messages, {:notification, {:clear, third_message.id}}})
+    _ = :sys.get_state(observer_view.pid)
+
+    refute has_element?(observer_view, "[data-testid='message-notification']")
+
+    author_view
+    |> form("#messages-body-form", %{"body" => "Fourth message"})
+    |> render_submit()
+
+    refute has_element?(observer_view, "[data-testid='message-notification']")
+
+    refute has_element?(
+             observer_view,
+             "[data-testid='message-notification-trigger'].tooltip-open"
+           )
   end
 
   test "delegates nested idea tools events", %{conn: conn, invitation_id: invitation_id} do
