@@ -18,7 +18,7 @@ defmodule HappenWeb.RoomLive.Invitation do
   end
 
   def handle_event("clipboard-result", %{"success" => true}, socket) do
-    {:noreply, Toast.put_toast(socket, :success, "Invitation URL copied")}
+    {:noreply, Toast.put_toast(socket, :info, "Invitation URL copied")}
   end
 
   def handle_event("clipboard-result", _params, socket) do
@@ -30,8 +30,8 @@ defmodule HappenWeb.RoomLive.Invitation do
     <button
       id="invite-friends"
       class={[
-        "btn btn-success btn-circle",
-        "tooltip tooltip-success tooltip-left"
+        "btn btn-info btn-lg btn-circle",
+        "tooltip tooltip-info tooltip-left"
       ]}
       data-clipboard-result-event={delegate_event("clipboard-result")}
       data-copy-event="copy-room-invitation-url"
@@ -40,8 +40,8 @@ defmodule HappenWeb.RoomLive.Invitation do
       phx-hook=".CopyRoomInvitationToClipboard"
       type="button"
     >
-      <.icon name="hero-user-plus-micro" />
-      <span class="tooltip-content max-w-32 text-right">Invite friends to this room</span>
+      <.icon name="hero-user-plus-solid" class="size-5" />
+      <span class="tooltip-content max-w-32 text-right font-normal">Invite friends to this room</span>
     </button>
 
     <script
