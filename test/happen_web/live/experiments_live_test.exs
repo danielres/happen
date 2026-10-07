@@ -308,6 +308,41 @@ defmodule HappenWeb.RoomLiveTest do
     assert_redirect(view, ~p"/guest/logout")
   end
 
+  test "creates an invitation that opens the current room", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
+    room_name = "invite-#{System.unique_integer([:positive])}"
+    room_key = RoomKey.encode(room_name)
+
+    conn =
+      invitation_session(conn, invitation_id, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Test guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, view, _html} = live(conn, ~p"/#{room_key}")
+
+    view
+    |> element("[data-testid='invite-friends']")
+    |> render_click()
+
+    assert_push_event(view, "copy-room-invitation-url", %{url: url})
+
+    uri = URI.parse(url)
+    assert URI.decode_query(uri.query) == %{"room_key" => room_key}
+
+    "/invite/" <> token = uri.path
+    assert {:ok, invitation} = Accounts.redeem_invitation(token)
+    refute invitation.id == invitation_id
+
+    view
+    |> render_hook("invitation:clipboard-result", %{"success" => true})
+
+    assert has_element?(view, "#toast-group .toast-info", "Invitation URL copied")
+  end
+
   test "adds an idea and toggles the current user's vote", %{
     conn: conn,
     invitation_id: invitation_id

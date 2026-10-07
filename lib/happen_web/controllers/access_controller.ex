@@ -2,6 +2,14 @@ defmodule HappenWeb.AccessController do
   use HappenWeb, :controller
 
   alias Happen.Accounts
+  alias Happen.RoomKey
+
+  def redeem(conn, %{"token" => token, "room_key" => room_key}) do
+    case RoomKey.decode(room_key) do
+      {:ok, _room_name} -> redeem_and_redirect(conn, token, ~p"/#{room_key}")
+      :error -> not_found(conn, %{})
+    end
+  end
 
   def redeem(conn, %{"token" => token}) do
     redeem_and_redirect(conn, token, ~p"/")

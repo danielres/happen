@@ -6,6 +6,7 @@ defmodule HappenWeb.RoomLive do
   alias HappenWeb.Components.Tabs
   alias HappenWeb.RoomLive.Components
   alias HappenWeb.RoomLive.Ideas
+  alias HappenWeb.RoomLive.Invitation
   alias HappenWeb.RoomLive.Messages
   alias HappenWeb.RoomLive.Messages.Notification
   alias HappenWeb.RoomLive.Presences
@@ -15,6 +16,7 @@ defmodule HappenWeb.RoomLive do
   delegate(:messages, Messages)
   delegate(:presences, Presences, info: [:group])
   delegate(:ideas, Ideas)
+  delegate(:invitation, Invitation, mount: false, info: false)
 
   @impl Phoenix.LiveView
   def mount(%{"room_key" => room_key} = params, session, socket) do
@@ -69,15 +71,8 @@ defmodule HappenWeb.RoomLive do
             </:indicator>
 
             <.section>
-              <:title>
-                <div class="flex justify-between gap-4 items-end">
-                  <div class="grow">Ideas</div>
-
-                  <div class="h-0 flex items-end mr-1">
-                    <Ideas.button_tools active?={@ideas.tools != nil} />
-                  </div>
-                </div>
-              </:title>
+              <:title>Ideas</:title>
+              <:actions><Ideas.button_tools active?={@ideas.tools != nil} /></:actions>
 
               <div class="grid gap-2">
                 <Ideas.render_form :if={is_nil(@ideas.tools)} form={@ideas.form} />
@@ -122,6 +117,7 @@ defmodule HappenWeb.RoomLive do
             </:indicator>
             <.section>
               <:title>Available now</:title>
+              <:actions><Invitation.render_button /></:actions>
               <Presences.render presences={@presences} />
             </.section>
           </Tabs.tab>
@@ -132,13 +128,17 @@ defmodule HappenWeb.RoomLive do
   end
 
   slot :title, required: false
+  slot :actions, required: false
 
   defp section(assigns) do
     ~H"""
     <section class="space-y-2">
-      <h3 :if={@title != []} class="small-caps tracking-wider font-bold">
-        {render_slot(@title)}
-      </h3>
+      <div class="flex gap-4 justify-between">
+        <h3 :if={@title != []} class="small-caps tracking-wider font-bold">
+          {render_slot(@title)}
+        </h3>
+        <div :if={@actions != []}>{render_slot(@actions)}</div>
+      </div>
 
       <div>{render_slot(@inner_block)}</div>
     </section>

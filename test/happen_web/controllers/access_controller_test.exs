@@ -2,6 +2,7 @@ defmodule HappenWeb.AccessControllerTest do
   use HappenWeb.ConnCase, async: true
 
   alias Happen.Accounts
+  alias Happen.RoomKey
 
   test "redeems an invitation into the browser session", %{conn: conn} do
     {invitation, token} = invitation_with_token()
@@ -18,6 +19,25 @@ defmodule HappenWeb.AccessControllerTest do
     conn = get(conn, ~p"/invite/not-a-valid-token")
 
     assert response(conn, 404) =~ "Not Found"
+  end
+
+  test "redeems an invitation and redirects directly to its room", %{conn: conn} do
+    {invitation, token} = invitation_with_token()
+    room_key = RoomKey.encode("Friends room")
+
+    conn = get(conn, ~p"/invite/#{token}?room_key=#{room_key}")
+
+    assert redirected_to(conn) == ~p"/#{room_key}"
+    assert get_session(conn, :invitation_id) == invitation.id
+  end
+
+  test "returns a generic 404 for a malformed room key", %{conn: conn} do
+    {_invitation, token} = invitation_with_token()
+
+    conn = get(conn, ~p"/invite/#{token}?room_key=invalid!")
+
+    assert response(conn, 404) =~ "Not Found"
+    refute get_session(conn, :invitation_id)
   end
 
   test "returns a generic 404 for a disabled invitation", %{conn: conn} do
