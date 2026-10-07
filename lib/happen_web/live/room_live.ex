@@ -115,7 +115,7 @@ defmodule HappenWeb.RoomLive do
             phx-click="tabs:select"
             phx-value-tab="presences"
           >
-            <:label><.icon name="hero-user-solid" class="size-5" /></:label>
+            <:label><.icon name="hero-users-solid" class="size-5" /></:label>
             <:indicator>
               <Tabs.count count={length(@presences)} data-testid="presences-count" />
             </:indicator>
