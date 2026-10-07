@@ -16,6 +16,7 @@
       lefthook
       nodejs_24
       pnpm
+      typescript-language-server
       # pgcli
       # secretspec
     ]
