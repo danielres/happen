@@ -7,7 +7,6 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Form do
   def render(assigns) do
     ~H"""
     <.form
-      class="mb-2"
       for={@form}
       id={delegate_dom_id("body-form")}
       phx-change={delegate_event("change")}

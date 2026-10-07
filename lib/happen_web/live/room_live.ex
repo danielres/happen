@@ -74,9 +74,13 @@ defmodule HappenWeb.RoomLive do
               <:title>Ideas</:title>
               <:actions><Ideas.button_tools active?={@ideas.tools != nil} /></:actions>
 
-              <div class="grid gap-2">
-                <Ideas.render_form :if={is_nil(@ideas.tools)} form={@ideas.form} />
-                <Ideas.render_tools :if={@ideas.tools} ideas={@ideas.data} tools={@ideas.tools} />
+              <div id="ideas-editor" class="grid gap-2" phx-hook="AutoAnimate">
+                <div :if={is_nil(@ideas.tools)} id="ideas-form-panel">
+                  <Ideas.render_form form={@ideas.form} />
+                </div>
+                <div :if={@ideas.tools} id="ideas-tools-panel">
+                  <Ideas.render_tools ideas={@ideas.data} tools={@ideas.tools} />
+                </div>
                 <Ideas.render ideas={@ideas.data} user_id={@user.data.id} />
               </div>
             </.section>
