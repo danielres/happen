@@ -9,7 +9,7 @@ defmodule HappenWeb.RoomLive.Ideas.Tools do
     socket |> delegate_assign(nil)
   end
 
-  def handle_event("open", _params, socket) do
+  def handle_event("start", _params, socket) do
     {:noreply, socket |> delegate_assign(:start)}
   end
 
@@ -48,7 +48,7 @@ defmodule HappenWeb.RoomLive.Ideas.Tools do
         !@active? && "opacity-50 hover:opacity-100 transition",
         @active? && "btn-warning"
       ]}
-      phx-click={if(@active?, do: delegate_event("close"), else: delegate_event("open"))}
+      phx-click={if(@active?, do: delegate_event("close"), else: delegate_event("start"))}
       type="button"
     >
       <.icon name="hero-cog-6-tooth-micro" />
@@ -67,12 +67,14 @@ defmodule HappenWeb.RoomLive.Ideas.Tools do
     <div
       data-testid={delegate_dom_id("panel")}
       class={[
-        "border-2 rounded-box p-2 mb-2",
+        "border-4 rounded-box p-2",
         @tools != :remove_all_ideas && "border-warning/30 bg-warning/3",
         @tools == :remove_all_ideas && "border-error/30 bg-error/10",
         "transition"
       ]}
       phx-click-away={delegate_event("close")}
+      phx-key="Escape"
+      phx-window-keydown={delegate_event((@tools == :start && "close") || "start")}
     >
       <div class="overflow-hidden">
         <div
