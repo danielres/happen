@@ -115,18 +115,20 @@ defmodule HappenWeb.RoomLive.Ideas do
         id={"idea-#{idea.id}"}
         data-testid={"idea-#{idea.id}"}
         class={[
-          "grid grid-cols-[1fr_auto] gap-0"
+          "flex gap-2"
         ]}
       >
         <div class={[
-          "rounded-l-box",
-          "bg-base-200",
+          "grow",
+          "rounded-box",
+          "bg-base-200/80 hover:bg-base-200 transition",
           "grid grid-cols-[1fr_auto]"
         ]}>
           <Components.Idea.render idea={idea} />
         </div>
         <div class={[
-          "rounded-r-box",
+          "rounded-box",
+          "h-fit",
           "bg-base-300/80",
           "grid grid-cols-[1fr_auto]"
         ]}>
