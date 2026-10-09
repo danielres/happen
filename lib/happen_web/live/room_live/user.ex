@@ -54,7 +54,7 @@ defmodule HappenWeb.RoomLive.User do
       class="badge rounded-full"
       style={"background: #{color(@user)}"}
     >
-      <span class="text-xs font-semibold opacity-60">{@user.name}</span>
+      <span class="text-xs font-semibold">{@user.name}</span>
     </span>
     """
   end
