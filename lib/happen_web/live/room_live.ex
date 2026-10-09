@@ -81,7 +81,7 @@ defmodule HappenWeb.RoomLive do
                 <div :if={@ideas.tools} id="ideas-tools-panel">
                   <Ideas.render_tools ideas={@ideas.data} tools={@ideas.tools} />
                 </div>
-                <Ideas.render ideas={@ideas.data} user_id={@user.data.id} />
+                <Ideas.render ideas={@ideas} user_id={@user.data.id} />
               </div>
             </.section>
           </Tabs.tab>

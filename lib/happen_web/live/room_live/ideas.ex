@@ -11,7 +11,7 @@ defmodule HappenWeb.RoomLive.Ideas do
 
   def on_mount(params, session, socket) do
     socket
-    |> delegate_assign(%{data: [], form: nil})
+    |> delegate_assign(%{data: [], form: nil, active: nil})
     |> assign_form("")
     |> delegate_mount(params, session)
     |> assign_ideas()
@@ -64,6 +64,20 @@ defmodule HappenWeb.RoomLive.Ideas do
     vote(params, socket, :down)
   end
 
+  def handle_event("toggle_active", params, socket) do
+    {id, _} = params["id"] |> Integer.parse()
+    active = if id == socket.assigns.ideas.active, do: nil, else: id
+    {:noreply, socket |> delegate_assign(:active, active)}
+  end
+
+  def handle_event("clear_active", params, socket) do
+    if socket.assigns.ideas.active do
+      {:noreply, socket |> delegate_assign(:active, nil)}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info({:votes_reset, user}, socket) do
     socket =
       socket
@@ -109,23 +123,32 @@ defmodule HappenWeb.RoomLive.Ideas do
       data-testid="ideas-list"
       phx-hook="AutoAnimate"
       class="space-y-2"
+      phx-click-away={delegate_event("clear_active")}
     >
       <li
-        :for={idea <- @ideas}
+        :for={idea <- @ideas.data}
         id={"idea-#{idea.id}"}
         data-testid={"idea-#{idea.id}"}
-        class={[
-          "flex gap-2"
-        ]}
+        class="flex gap-2"
       >
-        <div class={[
-          "grow",
-          "rounded-box",
-          "bg-base-200/80 hover:bg-base-200 transition",
-          "grid grid-cols-[1fr_auto]"
-        ]}>
-          <Components.Idea.render idea={idea} />
-        </div>
+        <button
+          phx-click={delegate_event("toggle_active")}
+          phx-value-id={idea.id}
+          class={[
+            "grow",
+            "text-left",
+            "cursor-pointer",
+            "grid grid-cols-[1fr_auto]",
+            "rounded-box",
+            "border-2",
+            idea.id != @ideas.active && "bg-base-300/40 hover:bg-base-300/60 transition",
+            idea.id != @ideas.active && "border-transparent",
+            idea.id == @ideas.active && "bg-base-300/60",
+            idea.id == @ideas.active && "border-black"
+          ]}
+        >
+          <Components.Idea.render idea={idea} active?={idea.id == @ideas.active} />
+        </button>
         <div class={[
           "rounded-box",
           "h-fit",
