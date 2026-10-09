@@ -3,19 +3,20 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
 
   alias HappenWeb.RoomLive.Ideas.Components
   alias HappenWeb.RoomLive.Ideas.Utils
+  alias HappenWeb.RoomLive.User
 
   attr :idea, :map, required: true
 
   def render(assigns) do
     ~H"""
     <label class={[
-      Utils.has_votes?(@idea) && "cursor-pointer",
+      "cursor-pointer",
       "block",
       "text text-base-content/75",
       "relative",
       "group"
     ]}>
-      <input :if={Utils.has_votes?(@idea)} type="checkbox" class="peer sr-only" />
+      <input type="checkbox" class="peer sr-only" />
 
       <div class={[
         "peer-checked:hidden",
@@ -23,30 +24,48 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
         "px-4 py-3"
       ]}>
         <div class="text-sm">{@idea.body}</div>
-        <div :if={Utils.has_votes?(@idea)} class="absolute right-2 top-0">
-          <.icon
-            name="hero-ellipsis-horizontal-micro"
-            class={[
-              "opacity-30 transition",
-              "group-hover:opacity-100"
-            ]}
-          />
-        </div>
       </div>
 
       <div
         data-testid={"idea-voters-#{@idea.id}"}
         class="hidden peer-checked:block"
       >
+        <% class_title = "small-caps opacity-75 tracking-wider text-sm min-w-[8ch]" %>
+        <% class_subgrid = "grid grid-cols-subgrid col-span-2 items-baseline" %>
+        <% class_border = "border-t border-base-content/10 pt-4 mt-4" %>
+
         <div class="p-4">
-          <Components.VotersList.render idea={@idea} direction={:up} />
-          <div
-            :if={Utils.has_votes_up_and_down?(@idea)}
-            class="h-0 border-b my-4 border-base-300"
-          >
+          <div class="grid grid-cols-[auto_1fr] gap-x-4">
+            <dl class={class_subgrid}>
+              <dt class={class_title}>By:</dt>
+              <dd><User.badge user={@idea.user} /></dd>
+            </dl>
+
+            <dl
+              :if={Utils.voters(@idea, :up) |> length > 0}
+              class={[class_subgrid, class_border]}
+            >
+              <dt class={class_title}>Upvotes:</dt>
+              <dd class="flex flex-wrap gap-1">
+                <span :for={vote <- Utils.voters(@idea, :up)}>
+                  <User.badge user={vote.user} />
+                </span>
+              </dd>
+            </dl>
+            <dl
+              :if={Utils.voters(@idea, :down) |> length > 0}
+              class={[class_subgrid, class_border]}
+            >
+              <dt class={class_title}>Downvotes:</dt>
+              <dd class="flex flex-wrap gap-1">
+                <span :for={vote <- Utils.voters(@idea, :down)}>
+                  <User.badge user={vote.user} />
+                </span>
+              </dd>
+            </dl>
           </div>
 
-          <Components.VotersList.render idea={@idea} direction={:down} />
+          <%!-- <Components.VotersList.render idea={@idea} direction={:down} /> --%>
         </div>
       </div>
     </label>
