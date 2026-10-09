@@ -18,6 +18,7 @@ defmodule Happen.Application do
       HappenWeb.Endpoint,
       {AshAuthentication.Supervisor, [otp_app: :happen]},
       {Group, name: :happen},
+      {Task.Supervisor, name: Happen.Push.TaskSupervisor},
       HappenWeb.RoomLive.Messages.Store,
       HappenWeb.RoomLive.Ideas.Store
     ]

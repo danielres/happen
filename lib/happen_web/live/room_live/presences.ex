@@ -13,6 +13,8 @@ defmodule HappenWeb.RoomLive.Presences do
 
   def handle_event("leave", _payload, socket) do
     room = socket.assigns.room
+    user = socket.assigns.user.data
+    _result = Happen.Push.leave_room(user.id, room.data.name)
     :ok = Group.leave(:happen, room.data.name)
     {:noreply, redirect(socket, to: ~p"/guest/logout")}
   end

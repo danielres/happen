@@ -23,6 +23,24 @@ end
 config :happen, HappenWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+vapid_public_key = System.get_env("VAPID_PUBLIC_KEY")
+vapid_private_key = System.get_env("VAPID_PRIVATE_KEY")
+vapid_subject = System.get_env("VAPID_SUBJECT")
+
+if config_env() == :prod and
+     Enum.any?([vapid_public_key, vapid_private_key, vapid_subject], &is_nil/1) do
+  raise "VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_SUBJECT must be configured"
+end
+
+if Enum.all?([vapid_public_key, vapid_private_key, vapid_subject], &is_binary/1) do
+  config :happen, Happen.Push, vapid_public_key: vapid_public_key
+
+  config :web_push_ex, :vapid,
+    private_key: vapid_private_key,
+    public_key: vapid_public_key,
+    subject: vapid_subject
+end
+
 if config_env() == :dev do
   # Reload browser tabs when matching files change.
   config :happen, HappenWeb.Endpoint,

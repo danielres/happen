@@ -2,6 +2,7 @@ defmodule HappenWeb.AdminLive do
   use HappenWeb, :live_view
 
   alias Happen.Accounts
+  alias Happen.Push
   alias HappenWeb.LiveAccess
 
   def mount(_params, session, socket) do
@@ -92,6 +93,7 @@ defmodule HappenWeb.AdminLive do
   def handle_event("disable-invitation", %{"id" => id}, socket) do
     with {:ok, invitation} <- Accounts.get_invitation(id),
          {:ok, invitation} <- Accounts.disable_invitation(invitation) do
+      _result = Push.remove_for_invitation(invitation.id)
       LiveAccess.revoke(invitation.id)
       {:noreply, stream_insert(socket, :invitations, invitation)}
     else

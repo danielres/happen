@@ -10,9 +10,11 @@ defmodule HappenWeb.RoomLive do
   alias HappenWeb.RoomLive.Messages
   alias HappenWeb.RoomLive.Messages.Notification
   alias HappenWeb.RoomLive.Presences
+  alias HappenWeb.RoomLive.PushNotifications
   alias HappenWeb.RoomLive.User
 
   delegate(:user, User)
+  delegate(:push_notifications, PushNotifications)
   delegate(:messages, Messages)
   delegate(:presences, Presences, info: [:group])
   delegate(:ideas, Ideas)
@@ -27,7 +29,7 @@ defmodule HappenWeb.RoomLive do
         socket =
           socket
           |> assign(room: %{data: %{key: room_key, name: room_name}})
-          |> assign(active_tab: "ideas")
+          |> assign(active_tab: "messages")
           |> delegate_mount(params, session)
 
         {:ok, socket}
@@ -53,80 +55,94 @@ defmodule HappenWeb.RoomLive do
     </Layouts.app>
 
     <Layouts.app :if={@user.data} flash={@flash}>
-      <div class="max-w-md mx-auto space-y-3 px-4 py-2">
-        <header>
-          <Components.Header.render user={@user.data} room={@room.data} />
-        </header>
-
-        <Tabs.render>
-          <Tabs.tab
-            active?={@active_tab == "ideas"}
-            name="main"
-            phx-click="tabs:select"
-            phx-value-tab="ideas"
+      <PushNotifications.root push_notifications={@push_notifications}>
+        <div class="max-w-md mx-auto space-y-3 px-4 py-2">
+          <div
+            class="flex justify-end"
+            phx-hook="AutoAnimate"
+            id="push-notifications-prompt"
           >
-            <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
-            <:indicator>
-              <Tabs.count count={@ideas.data |> length()} data-testid="ideas-count" />
-            </:indicator>
+            <PushNotifications.prompt push_notifications={@push_notifications} />
+          </div>
 
-            <.section>
-              <:title>Ideas</:title>
-              <:actions><Ideas.button_tools active?={@ideas.tools != nil} /></:actions>
+          <header>
+            <Components.Header.render
+              push_notifications={@push_notifications}
+              room={@room.data}
+              user={@user.data}
+            />
+          </header>
 
-              <div id="ideas-editor" class="grid gap-2" phx-hook="AutoAnimate">
-                <div :if={is_nil(@ideas.tools)} id="ideas-form-panel">
-                  <Ideas.render_form form={@ideas.form} />
+          <Tabs.render>
+            <Tabs.tab
+              active?={@active_tab == "ideas"}
+              name="main"
+              phx-click="tabs:select"
+              phx-value-tab="ideas"
+            >
+              <:label><.icon name="hero-light-bulb-mini" class="size-5" /></:label>
+              <:indicator>
+                <Tabs.count count={@ideas.data |> length()} data-testid="ideas-count" />
+              </:indicator>
+
+              <.section>
+                <:title>Ideas</:title>
+                <:actions><Ideas.button_tools active?={@ideas.tools != nil} /></:actions>
+
+                <div id="ideas-editor" class="grid gap-2" phx-hook="AutoAnimate">
+                  <div :if={is_nil(@ideas.tools)} id="ideas-form-panel">
+                    <Ideas.render_form form={@ideas.form} />
+                  </div>
+                  <div :if={@ideas.tools} id="ideas-tools-panel">
+                    <Ideas.render_tools ideas={@ideas.data} tools={@ideas.tools} />
+                  </div>
+                  <Ideas.render ideas={@ideas} user_id={@user.data.id} />
                 </div>
-                <div :if={@ideas.tools} id="ideas-tools-panel">
-                  <Ideas.render_tools ideas={@ideas.data} tools={@ideas.tools} />
-                </div>
-                <Ideas.render ideas={@ideas} user_id={@user.data.id} />
-              </div>
-            </.section>
-          </Tabs.tab>
+              </.section>
+            </Tabs.tab>
 
-          <Tabs.tab
-            active?={@active_tab == "messages"}
-            data-testid="messages-tab"
-            name="main"
-            phx-click="tabs:select"
-            phx-value-tab="messages"
-          >
-            <:label>
-              <Notification.render notification={@messages.notification}>
-                <.icon name="hero-chat-bubble-left-mini" class="size-5" />
-              </Notification.render>
-            </:label>
-            <:indicator>
-              <Tabs.count count={@messages.count} data-testid="messages-count" />
-            </:indicator>
+            <Tabs.tab
+              active?={@active_tab == "messages"}
+              data-testid="messages-tab"
+              name="main"
+              phx-click="tabs:select"
+              phx-value-tab="messages"
+            >
+              <:label>
+                <Notification.render notification={@messages.notification}>
+                  <.icon name="hero-chat-bubble-left-mini" class="size-5" />
+                </Notification.render>
+              </:label>
+              <:indicator>
+                <Tabs.count count={@messages.count} data-testid="messages-count" />
+              </:indicator>
 
-            <.section>
-              <:title>Ephemeral chit-chat</:title>
-              <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
-              <Messages.render messages={@messages} stream={@streams.messages} />
-            </.section>
-          </Tabs.tab>
+              <.section>
+                <:title>Ephemeral chit-chat</:title>
+                <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
+                <Messages.render messages={@messages} stream={@streams.messages} />
+              </.section>
+            </Tabs.tab>
 
-          <Tabs.tab
-            active?={@active_tab == "presences"}
-            name="main"
-            phx-click="tabs:select"
-            phx-value-tab="presences"
-          >
-            <:label><.icon name="hero-users-solid" class="size-5" /></:label>
-            <:indicator>
-              <Tabs.count count={length(@presences)} data-testid="presences-count" />
-            </:indicator>
-            <.section>
-              <:title>Available now</:title>
-              <:actions><Invitation.render_button /></:actions>
-              <Presences.render presences={@presences} />
-            </.section>
-          </Tabs.tab>
-        </Tabs.render>
-      </div>
+            <Tabs.tab
+              active?={@active_tab == "presences"}
+              name="main"
+              phx-click="tabs:select"
+              phx-value-tab="presences"
+            >
+              <:label><.icon name="hero-users-solid" class="size-5" /></:label>
+              <:indicator>
+                <Tabs.count count={length(@presences)} data-testid="presences-count" />
+              </:indicator>
+              <.section>
+                <:title>Available now</:title>
+                <:actions><Invitation.render_button /></:actions>
+                <Presences.render presences={@presences} />
+              </.section>
+            </Tabs.tab>
+          </Tabs.render>
+        </div>
+      </PushNotifications.root>
     </Layouts.app>
     """
   end

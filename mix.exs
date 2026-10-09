@@ -42,6 +42,7 @@ defmodule Happen.MixProject do
   defp deps do
     [
       {:toast, "~> 0.2.0"},
+      {:web_push_ex, "~> 0.2.0"},
       {:live_delegate, "~> 0.1.0"},
       {:group, "~> 0.2.0"},
       {:picosat_elixir, "~> 0.2"},

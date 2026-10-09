@@ -26,6 +26,7 @@ import { hooks as colocatedHooks } from "phoenix-colocated/happen"
 import topbar from "../vendor/topbar"
 import { AutoAnimate } from "./hooks/AutoAnimate"
 import { CapitalizeFirstLetter } from "./hooks/CapitalizeFirstLetter";
+import { PushNotifications } from "./hooks/PushNotifications"
 import { Toast } from "./hooks/Toast"
 
 import initLiveStash from "../../deps/live_stash/assets/js/live-stash.js";
@@ -38,6 +39,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
     Toast,
     AutoAnimate,
     CapitalizeFirstLetter,
+    PushNotifications,
     ...colocatedHooks,
   },
 })

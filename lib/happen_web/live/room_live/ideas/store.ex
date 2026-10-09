@@ -53,6 +53,7 @@ defmodule HappenWeb.RoomLive.Ideas.Store do
     rooms = Map.put(rooms, room_name, ideas)
 
     broadcast(room_name, {:added, idea})
+    Happen.Push.Notifications.idea_added(room_name, user, body)
 
     {:reply, idea, rooms}
   end

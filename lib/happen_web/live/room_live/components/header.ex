@@ -3,6 +3,7 @@ defmodule HappenWeb.RoomLive.Components.Header do
 
   alias HappenWeb.Components.Dropdown
   alias HappenWeb.RoomLive.Presences
+  alias HappenWeb.RoomLive.PushNotifications
   alias HappenWeb.RoomLive.User
 
   def render(assigns) do
@@ -22,6 +23,7 @@ defmodule HappenWeb.RoomLive.Components.Header do
 
         <:pane class="bg-base-200 dropdown-end rounded-box">
           <ul class="menu w-40">
+            <PushNotifications.menu_item push_notifications={@push_notifications} />
             <li class="bg-base-100">
               <.link data-testid="presences-leave" phx-click={Presences.leave_event()}>leave</.link>
             </li>

@@ -62,8 +62,10 @@ config :spark,
 config :happen,
   ecto_repos: [Happen.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Happen.Accounts],
+  ash_domains: [Happen.Accounts, Happen.Push],
   ash_authentication: [return_error_on_invalid_magic_link_token?: true]
+
+config :happen, Happen.Push, vapid_public_key: nil
 
 # Configure the endpoint
 config :happen, HappenWeb.Endpoint,
