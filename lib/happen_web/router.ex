@@ -45,16 +45,16 @@ defmodule HappenWeb.Router do
     post "/guest", GuestSessionController, :create
     get "/guest/logout", GuestSessionController, :delete
 
+    live "/_", AdminLive
+    post "/_/setup", AdminSessionController, :setup
+    post "/_/login", AdminSessionController, :login
+    delete "/_/logout", AdminSessionController, :logout
+
     live_session :invitation_access,
       on_mount: [{HappenWeb.LiveAccess, :require}] do
       live "/", HomeLive
       live "/:room_key", RoomLive
     end
-
-    live "/_", AdminLive
-    post "/_/setup", AdminSessionController, :setup
-    post "/_/login", AdminSessionController, :login
-    delete "/_/logout", AdminSessionController, :logout
 
     get "/invite/:token", AccessController, :redeem
     get "/404", AccessController, :not_found
