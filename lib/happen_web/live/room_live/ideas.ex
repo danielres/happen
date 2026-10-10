@@ -70,7 +70,7 @@ defmodule HappenWeb.RoomLive.Ideas do
     {:noreply, socket |> delegate_assign(:active, active)}
   end
 
-  def handle_event("clear_active", params, socket) do
+  def handle_event("clear_active", _params, socket) do
     if socket.assigns.ideas.active do
       {:noreply, socket |> delegate_assign(:active, nil)}
     else

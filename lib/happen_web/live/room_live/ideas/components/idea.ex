@@ -1,7 +1,6 @@
 defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
   use HappenWeb, :html
 
-  alias HappenWeb.RoomLive.Ideas.Components
   alias HappenWeb.RoomLive.Ideas.Utils
   alias HappenWeb.RoomLive.User
 
@@ -17,9 +16,7 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
     >
       <div
         :if={!@active?}
-        class={[
-          "px-4 py-3 text-sm",
-        ]}
+        class="px-4 py-3 text-sm"
         id={"idea-#{@idea.id}-body"}
       >
         {@idea.body}
@@ -28,8 +25,6 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Idea do
       <div
         :if={@active?}
         data-testid={"idea-voters-#{@idea.id}"}
-        class={[
-        ]}
         id={"idea-#{@idea.id}-details"}
       >
         <% class_title = "small-caps tracking-wider text-sm min-w-[8ch]" %>

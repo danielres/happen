@@ -92,7 +92,6 @@ defmodule HappenWeb.RoomLive.PushNotifications do
 
   attr :push_notifications, :map, required: true
   attr :class, :string, default: ""
-  slot :inner_block, required: true
 
   def render_button(assigns) do
     ~H"""
