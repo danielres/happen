@@ -2,32 +2,44 @@ defmodule HappenWeb.RoomLive.Timer do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:timer]
 
+  alias HappenWeb.RoomLive.Timer.Button
+  alias HappenWeb.RoomLive.Timer.State
+
+  delegate(:button, Button, mount: false, info: false)
+  delegate(:state, State, events: false, mount: false, info: false)
+
+  @options [10, 20, 30, 45, 60, 90, 120, 180, 240, 360]
+
   def on_mount(_params, _session, socket) do
-    until = DateTime.now!("Etc/UTC") |> DateTime.add(15, :minute)
-    options = [5, 10, 20, 30, 45, 60, 90, 120, 180, 240, 360]
+    default_deadline = DateTime.now!("Etc/UTC") |> DateTime.add(15, :minute)
 
     socket
-    |> delegate_assign(%{until: until, options: options})
+    |> delegate_assign(%{options: @options})
+    |> State.set_deadline(default_deadline)
+    |> State.schedule_tick()
   end
 
-  def handle_event("set", %{"option" => option}, socket) do
-    {option, _} = Integer.parse(option)
-    until = DateTime.now!("Etc/UTC") |> DateTime.add(option, :minute)
+  def handle_event("set_deadline", %{"option" => option}, socket) do
+    {option, ""} = Integer.parse(option)
+    deadline = DateTime.now!("Etc/UTC") |> DateTime.add(option, :minute)
 
     socket =
       socket
-      |> delegate_assign(:until, until)
+      |> State.set_deadline(deadline)
       |> assign(view: "main")
+      |> Button.store_deadline(deadline)
 
     {:noreply, socket}
   end
 
-  def diff(date_time) do
-    now = DateTime.now!("Etc/UTC")
-    DateTime.diff(date_time, now, :minute)
-  end
+  def handle_info(:tick, socket), do: {:noreply, State.tick(socket)}
 
-  def render_remaining(assigns) do
+  def render_button(assigns), do: Button.render(assigns)
+
+  attr :timer, :map, required: true
+  attr :tz, :string, required: true
+
+  def render_deadline(assigns) do
     ~H"""
     <div class={[
       "self-baseline",
@@ -36,45 +48,13 @@ defmodule HappenWeb.RoomLive.Timer do
     ]}>
       <span class="opacity-60">Available until:</span>
       <span class="bg-base-300 px-2 py-0.5 rounded-lg text-[12px]">
-        {@timer.until |> format_min_remaining(@tz)}
+        {@timer.deadline |> format_min_remaining(@tz)}
       </span>
     </div>
     """
   end
 
-  defp format_min_remaining(datetime, timezone) do
-    case DateTime.shift_zone(datetime, timezone) do
-      {:ok, local_datetime} ->
-        Calendar.strftime(local_datetime, " %H:%M")
-
-      {:error, _reason} ->
-        Calendar.strftime(datetime, "%H:%M UTC")
-    end
-  end
-
-  def render_button(assigns) do
-    assigns = assigns |> assign(value: diff(assigns.timer.until))
-
-    ~H"""
-    <button
-      phx-click="toggle_view"
-      phx-value-view="timer"
-      class={[
-        "bg-base-100",
-        "opacity-80 hover:opacity-100 transition",
-        "cursor-pointer",
-        "badge",
-        "rounded-full gap-1",
-        "text-[12px] font-semibold",
-        "oldstyle-nums"
-      ]}
-      type="button"
-    >
-      {@value}
-      <.icon name="hero-clock-micro" class="size-3" />
-    </button>
-    """
-  end
+  attr :timer, :map, required: true
 
   def render_form(assigns) do
     ~H"""
@@ -83,7 +63,7 @@ defmodule HappenWeb.RoomLive.Timer do
         <button
           :for={option <- @timer.options}
           class="btn btn-sm btn-info btn-soft text-base-content/80"
-          phx-click={delegate_event("set")}
+          phx-click={delegate_event("set_deadline")}
           phx-value-option={option}
           type="button"
         >
@@ -104,5 +84,15 @@ defmodule HappenWeb.RoomLive.Timer do
       </div>
     </div>
     """
+  end
+
+  defp format_min_remaining(datetime, timezone) do
+    case DateTime.shift_zone(datetime, timezone) do
+      {:ok, local_datetime} ->
+        Calendar.strftime(local_datetime, " %H:%M")
+
+      {:error, _reason} ->
+        Calendar.strftime(datetime, "%H:%M UTC")
+    end
   end
 end

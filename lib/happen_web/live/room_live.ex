@@ -103,7 +103,7 @@ defmodule HappenWeb.RoomLive do
 
             <div :if={@view == "timer"}>
               <.section>
-                <:actions><Timer.render_remaining tz={@tz} timer={@timer} /></:actions>
+                <:actions><Timer.render_deadline tz={@tz} timer={@timer} /></:actions>
                 <:title>Make me available for</:title>
                 <Timer.render_form timer={@timer} />
               </.section>

@@ -30,7 +30,7 @@ defmodule HappenWeb.RoomLive.Components.Header do
       </div>
 
       <div class="ml-auto">
-        <Timer.render_button timer={@timer} />
+        <Timer.render_button timer={@timer} room={@room.data} />
       </div>
 
       <.dropdown_user user={@user.data} push_notifications={@push_notifications} />
