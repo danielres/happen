@@ -41,6 +41,7 @@ defmodule Happen.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:tzdata, "~> 1.1"},
       {:toast, "~> 0.2.0"},
       {:web_push_ex, "~> 0.2.0"},
       {:live_delegate, "~> 0.1.0"},
