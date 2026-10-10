@@ -21,13 +21,31 @@ defmodule HappenWeb.RoomLive.Components.Header do
           <User.badge data-testid="current-user-badge" user={@user} />
         </:trigger>
 
-        <:pane class="bg-base-200 dropdown-end rounded-box">
-          <ul class="menu w-40">
-            <PushNotifications.menu_item push_notifications={@push_notifications} />
-            <li class="bg-base-100">
+        <:pane class={[
+          "dropdown-end",
+          "bg-base-300 p-1",
+          "rounded-box",
+          "text-xs",
+          "font-semibold",
+          "mt-4",
+          "-mr-4"
+        ]}>
+          <% item_class = [
+            "cursor-pointer",
+            "bg-base-100/80 hover:bg-base-100 rounded",
+            "px-4 py-2"
+          ] %>
+          <div class={["space-y-1"]}>
+            <PushNotifications.render_button
+              push_notifications={@push_notifications}
+              class={[item_class]}
+            />
+
+            <div class={[item_class, "flex items-center gap-2"]}>
+              <.icon name="hero-arrow-right-start-on-rectangle" />
               <.link data-testid="presences-leave" phx-click={Presences.leave_event()}>leave</.link>
-            </li>
-          </ul>
+            </div>
+          </div>
         </:pane>
       </Dropdown.render>
     </div>

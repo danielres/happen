@@ -91,33 +91,41 @@ defmodule HappenWeb.RoomLive.PushNotifications do
   end
 
   attr :push_notifications, :map, required: true
+  attr :class, :string, default: ""
+  slot :inner_block, required: true
 
-  def menu_item(assigns) do
+  def render_button(assigns) do
     ~H"""
-    <li :if={@push_notifications.status == :enabled}>
-      <button
-        data-testid="push-notifications-disable"
-        phx-click={JS.dispatch("happen:push-disable")}
-        type="button"
-      >
-        Disable notifications
-      </button>
-    </li>
-    <li :if={@push_notifications.status == :disabled}>
-      <button
-        data-testid="push-notifications-enable"
-        phx-click={JS.dispatch("happen:push-enable")}
-        type="button"
-      >
-        Enable notifications
-      </button>
-    </li>
-    <li :if={@push_notifications.status == :denied}>
-      <span class="text-base-content/60">Notifications blocked by browser</span>
-    </li>
-    <li :if={@push_notifications.status == :error}>
-      <span class="text-error">Notifications could not be enabled</span>
-    </li>
+    <button
+      :if={@push_notifications.status == :enabled}
+      class={["flex items-center gap-2", @class]}
+      data-testid="push-notifications-disable"
+      phx-click={JS.dispatch("happen:push-disable")}
+      type="button"
+    >
+      <.icon name="hero-bell-slash" /> Disable notifications
+    </button>
+    <button
+      :if={@push_notifications.status == :disabled}
+      class={["flex items-center gap-2", @class]}
+      data-testid="push-notifications-enable"
+      phx-click={JS.dispatch("happen:push-enable")}
+      type="button"
+    >
+      <.icon name="hero-bell" /> Enable notifications
+    </button>
+    <div
+      :if={@push_notifications.status == :denied}
+      class={["opacity-60", @class]}
+    >
+      Notifications blocked by browser
+    </div>
+    <div
+      :if={@push_notifications.status == :error}
+      class={["text-error", @class]}
+    >
+      Notifications could not be enabled
+    </div>
     """
   end
 end
