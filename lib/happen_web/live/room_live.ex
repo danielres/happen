@@ -87,6 +87,7 @@ defmodule HappenWeb.RoomLive do
               room={@room}
               timer={@timer}
               user={@user}
+              view={@view}
             />
           </header>
 

@@ -11,6 +11,7 @@ defmodule HappenWeb.RoomLive.Components.Header do
   attr :room, :map, required: true
   attr :user, :map, required: true
   attr :timer, :map, required: true
+  attr :view, :string, required: true
 
   def render(assigns) do
     ~H"""
@@ -30,7 +31,7 @@ defmodule HappenWeb.RoomLive.Components.Header do
       </div>
 
       <div class="ml-auto">
-        <Timer.render_button timer={@timer} room={@room.data} />
+        <Timer.render_button timer={@timer} room={@room.data} active?={@view == "timer"} />
       </div>
 
       <.dropdown_user user={@user.data} push_notifications={@push_notifications} />

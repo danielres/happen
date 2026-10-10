@@ -11,6 +11,7 @@ defmodule HappenWeb.RoomLive.Timer.Button do
 
   attr :room, :map, required: true
   attr :timer, :map, required: true
+  attr :active?, :boolean, required: true
 
   def render(assigns) do
     ~H"""
@@ -18,7 +19,8 @@ defmodule HappenWeb.RoomLive.Timer.Button do
       phx-click="toggle_view"
       phx-value-view="timer"
       class={[
-        "bg-base-100",
+        @active? && "bg-info/75",
+        !@active? && "bg-base-content/15",
         "opacity-80 hover:opacity-100 transition",
         "cursor-pointer",
         "badge",
@@ -32,7 +34,7 @@ defmodule HappenWeb.RoomLive.Timer.Button do
         id={"availability-timer-#{@room.key}"}
         data-room-key={@room.key}
         phx-hook=".AvailabilityTimer"
-        class={@timer.remaining_min <= 5 && "text-red-300 animate-pulse"}
+        class={@timer.remaining_min <= 5 && !@active? && "text-red-400 animate-pulse"}
       >
         {@timer.remaining_min}
       </span>

@@ -62,7 +62,7 @@ defmodule HappenWeb.RoomLive.Timer do
       <div class="grid gap-1">
         <button
           :for={option <- @timer.options}
-          class="btn btn-sm btn-info btn-soft text-base-content/80"
+          class="btn btn-sm bg-info/30 hover:bg-info/50 transition border-none text-base-content/80"
           phx-click={delegate_event("set_deadline")}
           phx-value-option={option}
           type="button"
@@ -76,7 +76,7 @@ defmodule HappenWeb.RoomLive.Timer do
           phx-click="toggle_view"
           phx-value-view="timer"
           class={[
-            "btn btn-sm btn-soft hover:bg-base-100 text-base-content/80"
+            "btn btn-sm bg-base-100/50 hover:bg-base-100 text-base-content/80"
           ]}
         >
           Cancel
