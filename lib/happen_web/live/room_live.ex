@@ -29,7 +29,7 @@ defmodule HappenWeb.RoomLive do
         socket =
           socket
           |> assign(room: %{data: %{key: room_key, name: room_name}})
-          |> assign(active_tab: "messages")
+          |> assign(active_tab: "ideas")
           |> delegate_mount(params, session)
 
         {:ok, socket}
