@@ -19,8 +19,9 @@ defmodule HappenWeb.RoomLive.Timer.Button do
       phx-click="toggle_view"
       phx-value-view="timer"
       class={[
-        @active? && "bg-info/75",
+        @active? && "bg-info/65",
         !@active? && "bg-base-content/15",
+        @timer.remaining_min <= 5 && !@active? && "bg-red-400 animate-pulse",
         "opacity-80 hover:opacity-100 transition",
         "cursor-pointer",
         "badge",
@@ -34,7 +35,6 @@ defmodule HappenWeb.RoomLive.Timer.Button do
         id={"availability-timer-#{@room.key}"}
         data-room-key={@room.key}
         phx-hook=".AvailabilityTimer"
-        class={@timer.remaining_min <= 5 && !@active? && "text-red-400 animate-pulse"}
       >
         {@timer.remaining_min}
       </span>
