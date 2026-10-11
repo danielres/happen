@@ -48,6 +48,17 @@ defmodule HappenWeb.RoomLive.Ideas do
     {:noreply, socket |> assign_form()}
   end
 
+  def handle_event("delete", %{"id" => id}, socket) do
+    room_name = socket.assigns.room.data.name
+
+    with {idea_id, ""} <- Integer.parse(id),
+         {:ok, _idea} <- Store.delete_idea(room_name, idea_id) do
+      {:noreply, socket}
+    else
+      _invalid_idea -> {:noreply, socket}
+    end
+  end
+
   def handle_event("add_cancel", _params, socket) do
     {:noreply, socket |> assign_form()}
   end
@@ -87,7 +98,7 @@ defmodule HappenWeb.RoomLive.Ideas do
     {:noreply, socket}
   end
 
-  def handle_info({event, _idea}, socket) when event in [:added, :updated] do
+  def handle_info({event, _idea}, socket) when event in [:added, :deleted, :updated] do
     {:noreply, assign_ideas(socket)}
   end
 
@@ -131,24 +142,51 @@ defmodule HappenWeb.RoomLive.Ideas do
         data-testid={"idea-#{idea.id}"}
         class="flex gap-2"
       >
-        <button
-          phx-click={delegate_event("toggle_active")}
-          phx-value-id={idea.id}
-          class={[
-            "grow",
-            "text-left",
-            "cursor-pointer",
-            "grid grid-cols-[1fr_auto]",
-            "rounded-box",
-            "border-2",
-            idea.id != @ideas.active && "bg-base-300/40 hover:bg-base-300/60 transition",
-            idea.id != @ideas.active && "border-transparent",
-            idea.id == @ideas.active && "bg-base-300/60",
-            idea.id == @ideas.active && "border-black"
-          ]}
-        >
-          <Components.Idea.render idea={idea} active?={idea.id == @ideas.active} />
-        </button>
+        <div class={[
+          "grow",
+          "stacked",
+          "group"
+        ]}>
+          <button
+            phx-click={delegate_event("toggle_active")}
+            phx-value-id={idea.id}
+            class={[
+              "w-full",
+              "text-left",
+              "cursor-pointer",
+              "grid grid-cols-[1fr_auto]",
+              "rounded-box",
+              "border-2",
+              idea.id != @ideas.active && "bg-base-300/40 group-hover:bg-base-300/60 transition",
+              idea.id != @ideas.active && "border-transparent",
+              idea.id == @ideas.active && "bg-base-300/60",
+              idea.id == @ideas.active && "border-black"
+            ]}
+          >
+            <Components.Idea.render idea={idea} active?={idea.id == @ideas.active} />
+          </button>
+
+          <div
+            :if={idea.id == @ideas.active && "border-black"}
+            class="self-start justify-self-end"
+          >
+            <button
+              class={[
+                "btn btn-xs btn-ghost hover:btn-error btn-square",
+                "opacity-30 hover:opacity-100 transition",
+                "m-2"
+              ]}
+              phx-click={delegate_event("delete")}
+              phx-value-id={idea.id}
+              data-confirm="Delete this idea permanently?"
+              data-testid={"idea-delete-#{idea.id}"}
+              type="button"
+            >
+              <.icon name="hero-trash-micro" />
+            </button>
+          </div>
+        </div>
+
         <div class={[
           "rounded-box",
           "h-fit",

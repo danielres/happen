@@ -3,6 +3,24 @@ defmodule HappenWeb.RoomLive.Ideas.StoreTest do
 
   alias HappenWeb.RoomLive.Ideas.Store
 
+  test "deletes one idea from its room and broadcasts the deletion" do
+    first_room = "ideas-#{System.unique_integer([:positive])}"
+    second_room = "ideas-#{System.unique_integer([:positive])}"
+    user = %{id: Ash.UUID.generate(), name: "Test guest", hue: 40}
+
+    deleted_idea = Store.add_idea(first_room, user, "Delete me")
+    remaining_idea = Store.add_idea(first_room, user, "Keep me")
+    other_room_idea = Store.add_idea(second_room, user, "Other room idea")
+
+    :ok = Store.subscribe(first_room)
+
+    assert {:ok, ^deleted_idea} = Store.delete_idea(first_room, deleted_idea.id)
+    assert_receive {:ideas, {:deleted, ^deleted_idea}}
+    assert Store.list_ideas(first_room) == [remaining_idea]
+    assert Store.list_ideas(second_room) == [other_room_idea]
+    assert {:error, :not_found} = Store.delete_idea(first_room, deleted_idea.id)
+  end
+
   test "toggles and switches one vote per user" do
     room_name = "ideas-#{System.unique_integer([:positive])}"
     user = %{id: Ash.UUID.generate(), name: "Test guest", hue: 40}

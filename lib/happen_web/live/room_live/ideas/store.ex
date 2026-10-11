@@ -18,6 +18,10 @@ defmodule HappenWeb.RoomLive.Ideas.Store do
     GenServer.call(__MODULE__, {:add_idea, room_name, user, body})
   end
 
+  def delete_idea(room_name, idea_id) when is_integer(idea_id) do
+    GenServer.call(__MODULE__, {:delete_idea, room_name, idea_id})
+  end
+
   def vote(room_name, idea_id, user, direction) when is_map(user) and direction in [:up, :down] do
     GenServer.call(__MODULE__, {:vote, room_name, idea_id, user, direction})
   end
@@ -59,6 +63,30 @@ defmodule HappenWeb.RoomLive.Ideas.Store do
   end
 
   @impl true
+  def handle_call({:delete_idea, room_name, idea_id}, _from, rooms) do
+    ideas = Map.get(rooms, room_name, [])
+
+    case Enum.find_index(ideas, &(&1.id == idea_id)) do
+      nil ->
+        {:reply, {:error, :not_found}, rooms}
+
+      index ->
+        {idea, ideas} = List.pop_at(ideas, index)
+
+        rooms =
+          if ideas == [] do
+            Map.delete(rooms, room_name)
+          else
+            Map.put(rooms, room_name, ideas)
+          end
+
+        broadcast(room_name, {:deleted, idea})
+
+        {:reply, {:ok, idea}, rooms}
+    end
+  end
+
+  @impl true
   def handle_call({:vote, room_name, idea_id, user, direction}, _from, rooms) do
     ideas = Map.get(rooms, room_name, [])
 
@@ -92,27 +120,6 @@ defmodule HappenWeb.RoomLive.Ideas.Store do
 
         {:reply, :ok, rooms}
     end
-  end
-
-  @impl true
-  def handle_info({:delete_idea, room_name, idea_id}, rooms) do
-    ideas =
-      rooms
-      |> Map.get(room_name, [])
-      |> Enum.reject(fn idea ->
-        idea.id == idea_id
-      end)
-
-    rooms =
-      if ideas == [] do
-        Map.delete(rooms, room_name)
-      else
-        Map.put(rooms, room_name, ideas)
-      end
-
-    broadcast(room_name, {:deleted_idea, idea_id})
-
-    {:noreply, rooms}
   end
 
   defp broadcast(room_name, event) do
