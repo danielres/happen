@@ -21,7 +21,7 @@ defmodule HappenWeb.RoomLive.Ideas.Components.Form do
           autocomplete="off"
           name={@form[:body].name}
           value={Phoenix.HTML.Form.normalize_value("text", @form[:body].value)}
-          placeholder="Suggest an idea"
+          placeholder="Suggest a group activity"
           required
           class="grow"
         />
