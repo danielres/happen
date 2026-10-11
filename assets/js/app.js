@@ -29,14 +29,12 @@ import { CapitalizeFirstLetter } from "./hooks/CapitalizeFirstLetter";
 import { PushNotifications } from "./hooks/PushNotifications"
 import { Toast } from "./hooks/Toast"
 
-import initLiveStash from "../../deps/live_stash/assets/js/live-stash.js";
-
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const liveSocket = new LiveSocket("/live", Socket, {
-  params: initLiveStash({ _csrf_token: csrfToken, tz: timeZone }),
+  params: { _csrf_token: csrfToken, tz: timeZone },
   longPollFallbackMs: 2500,
   hooks: {
     Toast,
