@@ -94,6 +94,7 @@ defmodule HappenWeb.RoomLive do
           <div phx-hook="AutoAnimate" id="room-views">
             <.view_main
               :if={@view == "main"}
+              access_kind={@access_kind}
               active_tab={@active_tab}
               ideas={@ideas}
               messages={@messages}
@@ -139,6 +140,7 @@ defmodule HappenWeb.RoomLive do
     """
   end
 
+  attr :access_kind, :atom, required: true
   attr :active_tab, :string, required: true
   attr :ideas, :map, required: true
   attr :messages, :map, required: true
@@ -211,7 +213,7 @@ defmodule HappenWeb.RoomLive do
         </:indicator>
         <.section>
           <:title>Available now</:title>
-          <:actions><Invitation.render_button /></:actions>
+          <:actions :if={@access_kind == :invitation}><Invitation.render_button /></:actions>
           <Presences.render presences={@presences} />
         </.section>
       </Tabs.tab>

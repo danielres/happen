@@ -4,16 +4,16 @@ defmodule HappenWeb.RoomLive.Invitation do
 
   alias Happen.Accounts
 
-  def handle_event("create", _params, socket) do
+  def handle_event("copy", _params, socket) do
+    invitation = socket.assigns.current_invitation
     room_key = socket.assigns.room.data.key
 
-    with {:ok, invitation} <- Accounts.create_invitation(),
-         {:ok, token} <- Accounts.invitation_token(invitation) do
-      url = HappenWeb.Endpoint.url() <> ~p"/invite/#{token}?room_key=#{room_key}"
-      {:noreply, push_event(socket, "copy-room-invitation-url", %{url: url})}
+    with {:ok, token} <- Accounts.invitation_token(invitation) do
+      path = ~p"/invite/#{token}?room_key=#{room_key}"
+      {:noreply, push_event(socket, "copy-room-invitation-url", %{path: path})}
     else
       {:error, _error} ->
-        {:noreply, Toast.put_toast(socket, :error, "Could not create invitation")}
+        {:noreply, Toast.put_toast(socket, :error, "Could not copy invitation")}
     end
   end
 
@@ -36,7 +36,7 @@ defmodule HappenWeb.RoomLive.Invitation do
       data-clipboard-result-event={delegate_event("clipboard-result")}
       data-copy-event="copy-room-invitation-url"
       data-testid="invite-friends"
-      phx-click={delegate_event("create")}
+      phx-click={delegate_event("copy")}
       phx-hook=".CopyRoomInvitationToClipboard"
       type="button"
     >
@@ -54,11 +54,13 @@ defmodule HappenWeb.RoomLive.Invitation do
           const foo: string = "foo"
           const baf = foo + 2
 
-          this.handleEvent(this.el.dataset.copyEvent, ({url}) => {
+          this.handleEvent(this.el.dataset.copyEvent, ({path}) => {
             if (!navigator.clipboard) {
               this.pushEvent(this.el.dataset.clipboardResultEvent, {success: false})
               return
             }
+
+            const url = new URL(path, window.location.origin).toString()
 
             navigator.clipboard.writeText(url)
               .then(() => this.pushEvent(this.el.dataset.clipboardResultEvent, {success: true}))

@@ -308,7 +308,7 @@ defmodule HappenWeb.RoomLiveTest do
     assert_redirect(view, ~p"/guest/logout")
   end
 
-  test "creates an invitation that opens the current room", %{
+  test "reuses the current invitation when sharing the room", %{
     conn: conn,
     invitation_id: invitation_id
   } do
@@ -323,24 +323,46 @@ defmodule HappenWeb.RoomLiveTest do
       })
 
     {:ok, view, _html} = live(conn, ~p"/#{room_key}")
+    {:ok, invitations_before} = Accounts.list_invitations()
 
     view
     |> element("[data-testid='invite-friends']")
     |> render_click()
 
-    assert_push_event(view, "copy-room-invitation-url", %{url: url})
+    assert_push_event(view, "copy-room-invitation-url", %{path: path})
 
-    uri = URI.parse(url)
+    uri = URI.parse(path)
     assert URI.decode_query(uri.query) == %{"room_key" => room_key}
 
     "/invite/" <> token = uri.path
     assert {:ok, invitation} = Accounts.redeem_invitation(token)
-    refute invitation.id == invitation_id
+    assert invitation.id == invitation_id
+
+    assert {:ok, invitations_after} = Accounts.list_invitations()
+    assert length(invitations_after) == length(invitations_before)
 
     view
     |> render_hook("invitation:clipboard-result", %{"success" => true})
 
     assert has_element?(view, "#toast-group .toast-info", "Invitation URL copied")
+  end
+
+  test "does not offer room invitations to admins", %{conn: conn} do
+    password = "a secure admin password"
+    {:ok, admin} = Accounts.initialize_admin(password, password)
+    room_name = "admin-#{System.unique_integer([:positive])}"
+
+    conn =
+      init_test_session(conn, %{
+        "admin_id" => admin.id,
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Admin",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, view, _html} = live(conn, room_path(room_name))
+
+    refute has_element?(view, "[data-testid='invite-friends']")
   end
 
   test "adds an idea and toggles the current user's vote", %{

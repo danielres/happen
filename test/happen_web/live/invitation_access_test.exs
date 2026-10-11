@@ -18,14 +18,35 @@ defmodule HappenWeb.InvitationAccessTest do
     assert has_element?(view, "[data-testid='room-form']")
   end
 
-  test "disabling an invitation from admin revokes an active room LiveView", %{conn: conn} do
+  test "admin copies an invitation path for the browser's current origin", %{conn: conn} do
     password = "a secure admin password"
     {:ok, admin} = Accounts.initialize_admin(password, password)
     {:ok, invitation} = Accounts.create_invitation()
 
-    invited_conn = init_test_session(conn, %{"invitation_id" => invitation.id})
+    admin_conn = init_test_session(conn, %{"admin_id" => admin.id})
+    {:ok, admin_view, _html} = live(admin_conn, ~p"/_")
+
+    admin_view
+    |> element("#copy-invitation-#{invitation.id}")
+    |> render_click()
+
+    assert_push_event(admin_view, "copy-invitation-url", %{path: path})
+    assert String.starts_with?(path, "/invite/")
+    refute String.starts_with?(path, "http")
+  end
+
+  test "disabling an invitation from admin revokes every active LiveView using it", %{conn: conn} do
+    password = "a secure admin password"
+    {:ok, admin} = Accounts.initialize_admin(password, password)
+    {:ok, invitation} = Accounts.create_invitation()
+
     room_path = ~p"/#{RoomKey.encode("Integration test room")}"
-    {:ok, invited_view, _html} = live(invited_conn, room_path)
+
+    first_conn = init_test_session(conn, %{"invitation_id" => invitation.id})
+    second_conn = init_test_session(build_conn(), %{"invitation_id" => invitation.id})
+
+    {:ok, first_view, _html} = live(first_conn, room_path)
+    {:ok, second_view, _html} = live(second_conn, room_path)
 
     admin_conn = init_test_session(build_conn(), %{"admin_id" => admin.id})
     {:ok, admin_view, _html} = live(admin_conn, ~p"/_")
@@ -34,6 +55,7 @@ defmodule HappenWeb.InvitationAccessTest do
     |> element("[data-testid='disable-invitation'][phx-value-id='#{invitation.id}']")
     |> render_click()
 
-    assert_redirect(invited_view, "/404")
+    assert_redirect(first_view, "/404")
+    assert_redirect(second_view, "/404")
   end
 end

@@ -120,8 +120,8 @@ defmodule HappenWeb.AdminLive do
   def handle_event("copy-invitation", %{"id" => id}, socket) do
     with {:ok, invitation} <- Accounts.get_invitation(id),
          {:ok, token} <- Accounts.invitation_token(invitation) do
-      url = HappenWeb.Endpoint.url() <> "/invite/" <> token
-      {:noreply, push_event(socket, "copy-invitation-url", %{url: url})}
+      path = ~p"/invite/#{token}"
+      {:noreply, push_event(socket, "copy-invitation-url", %{path: path})}
     else
       {:error, _error} ->
         {:noreply, put_flash(socket, :error, "Could not copy invitation URL")}
@@ -336,11 +336,13 @@ defmodule HappenWeb.AdminLive do
       <script :type={Phoenix.LiveView.ColocatedHook} name=".CopyToClipboard">
         export default {
           mounted() {
-            this.handleEvent("copy-invitation-url", ({url}) => {
+            this.handleEvent("copy-invitation-url", ({path}) => {
               if (!navigator.clipboard) {
                 this.pushEvent("clipboard-result", {success: false})
                 return
               }
+
+              const url = new URL(path, window.location.origin).toString()
 
               navigator.clipboard.writeText(url)
                 .then(() => this.pushEvent("clipboard-result", {success: true}))
