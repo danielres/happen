@@ -11,11 +11,9 @@ defmodule HappenWeb.RoomLive.Timer do
   @options [10, 20, 30, 45, 60, 90, 120, 180, 240, 360]
 
   def on_mount(_params, _session, socket) do
-    default_deadline = DateTime.now!("Etc/UTC") |> DateTime.add(15, :minute)
-
     socket
     |> delegate_assign(%{options: @options})
-    |> State.set_deadline(default_deadline)
+    |> State.set_deadline(State.default_deadline())
     |> State.schedule_tick()
   end
 

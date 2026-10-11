@@ -5,6 +5,7 @@ defmodule HappenWeb.RoomLive.Timer.State do
   # def init(socket, deadline) do
   #   socket |> schedule_tick() |> set_deadline(deadline)
   # end
+  def default_deadline(), do: DateTime.now!("Etc/UTC") |> DateTime.add(15, :minute)
 
   def set_deadline(socket, deadline) do
     remaining_ms = deadline |> DateTime.diff(DateTime.now!("Etc/UTC"), :millisecond)
