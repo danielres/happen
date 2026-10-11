@@ -121,3 +121,11 @@
   animation: fade-out var(--message-ttl) ease-out forwards;
   animation-delay: calc(0ms - var(--message-age, 0ms));
 }
+
+.stacked {
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
