@@ -30,8 +30,8 @@ defmodule HappenWeb.RoomLive.Invitation do
     <button
       id="invite-friends"
       class={[
-        "btn btn-info btn-circle",
-        "tooltip tooltip-info tooltip-left"
+        "btn btn-sm btn-info",
+        "tooltip tooltip-info tooltip-bottom tooltip-end"
       ]}
       data-clipboard-result-event={delegate_event("clipboard-result")}
       data-copy-event="copy-room-invitation-url"
@@ -40,8 +40,8 @@ defmodule HappenWeb.RoomLive.Invitation do
       phx-hook=".CopyRoomInvitationToClipboard"
       type="button"
     >
-      <.icon name="hero-user-plus-solid" class="size-5" />
-      <span class="tooltip-content max-w-32 text-right font-normal">Invite friends to this room</span>
+      Invite friends <.icon name="hero-user-plus-solid" class="size-5" />
+      <span class="tooltip-content">Invite friends to this room</span>
     </button>
 
     <script
