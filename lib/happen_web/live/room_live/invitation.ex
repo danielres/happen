@@ -30,7 +30,7 @@ defmodule HappenWeb.RoomLive.Invitation do
     <button
       id="invite-friends"
       class={[
-        "btn btn-info btn-lg btn-circle",
+        "btn btn-info btn-circle",
         "tooltip tooltip-info tooltip-left"
       ]}
       data-clipboard-result-event={delegate_event("clipboard-result")}
