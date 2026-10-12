@@ -2,6 +2,7 @@ defmodule HappenWeb.RoomLive.Timer do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:timer]
 
+  alias HappenWeb.RoomLive.Presences
   alias HappenWeb.RoomLive.Timer.Button
   alias HappenWeb.RoomLive.Timer.State
 
@@ -11,9 +12,12 @@ defmodule HappenWeb.RoomLive.Timer do
   @options [10, 20, 30, 45, 60, 90, 120, 180, 240, 360]
 
   def on_mount(_params, _session, socket) do
+    deadline = State.default_deadline()
+
     socket
     |> delegate_assign(%{options: @options})
-    |> State.set_deadline(State.default_deadline())
+    |> State.set_deadline(deadline)
+    |> Presences.set_deadline(deadline)
     |> State.schedule_tick()
   end
 
@@ -24,6 +28,7 @@ defmodule HappenWeb.RoomLive.Timer do
     socket =
       socket
       |> State.set_deadline(deadline)
+      |> Presences.set_deadline(deadline)
       |> assign(view: "main")
       |> Button.store_deadline(deadline)
 

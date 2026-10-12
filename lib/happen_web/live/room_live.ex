@@ -100,6 +100,7 @@ defmodule HappenWeb.RoomLive do
               messages={@messages}
               presences={@presences}
               streams={@streams}
+              tz={@tz}
               user={@user}
             />
 
@@ -146,6 +147,7 @@ defmodule HappenWeb.RoomLive do
   attr :messages, :map, required: true
   attr :presences, :list, required: true
   attr :streams, :list, required: true
+  attr :tz, :string, required: true
   attr :user, :map, required: true
 
   defp view_main(assigns) do
@@ -214,7 +216,7 @@ defmodule HappenWeb.RoomLive do
         <.section>
           <:title>Available now</:title>
           <:actions :if={@access_kind == :invitation}><Invitation.render_button /></:actions>
-          <Presences.render presences={@presences} />
+          <Presences.render presences={@presences} tz={@tz} />
         </.section>
       </Tabs.tab>
     </Tabs.render>

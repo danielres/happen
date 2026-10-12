@@ -286,6 +286,47 @@ defmodule HappenWeb.RoomLiveTest do
     assert has_element?(second_view, "[data-testid='current-user-badge'][style*='220']")
   end
 
+  test "shows each guest's availability in the viewer's timezone", %{
+    conn: conn,
+    invitation_id: invitation_id
+  } do
+    room_name = "availability-#{System.unique_integer([:positive])}"
+    first_guest_id = Ash.UUID.generate()
+
+    first_conn =
+      invitation_session(conn, invitation_id, %{
+        "guest_id" => first_guest_id,
+        "guest_name" => "First guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    second_conn =
+      Phoenix.ConnTest.build_conn()
+      |> put_connect_params(%{"tz" => "Europe/Berlin"})
+      |> invitation_session(invitation_id, %{
+        "guest_id" => Ash.UUID.generate(),
+        "guest_name" => "Second guest",
+        "guest_since" => DateTime.now!("Etc/UTC")
+      })
+
+    {:ok, first_view, _html} = live(first_conn, room_path(room_name))
+    {:ok, second_view, _html} = live(second_conn, room_path(room_name))
+
+    deadline = DateTime.now!("Etc/UTC") |> DateTime.add(90, :minute)
+    deadline_ms = DateTime.to_unix(deadline, :millisecond)
+    {:ok, local_deadline} = DateTime.shift_zone(deadline, "Europe/Berlin")
+
+    render_hook(first_view, "timer:button:restore_deadline", %{
+      "deadline" => deadline_ms
+    })
+
+    assert has_element?(
+             second_view,
+             "[data-testid='presence-deadline-#{first_guest_id}'][data-deadline='#{deadline_ms}']",
+             Calendar.strftime(local_deadline, "%H:%M")
+           )
+  end
+
   test "delegates the leave event through presences", %{
     conn: conn,
     invitation_id: invitation_id

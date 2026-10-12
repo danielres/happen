@@ -2,6 +2,7 @@ defmodule HappenWeb.RoomLive.Timer.Button do
   use HappenWeb, :live_view
   use LiveDelegate, path: [:timer, :button]
 
+  alias HappenWeb.RoomLive.Presences
   alias HappenWeb.RoomLive.Timer.State
 
   def store_deadline(socket, deadline) do
@@ -89,7 +90,9 @@ defmodule HappenWeb.RoomLive.Timer.Button do
     socket =
       with {:ok, deadline} <- DateTime.from_unix(unix_ms, :millisecond),
            :gt <- DateTime.compare(deadline, DateTime.now!("Etc/UTC")) do
-        State.set_deadline(socket, deadline)
+        socket
+        |> State.set_deadline(deadline)
+        |> Presences.set_deadline(deadline)
       else
         _invalid_deadline -> socket
       end
