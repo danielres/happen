@@ -171,6 +171,29 @@ defmodule HappenWeb.RoomLive do
       </Tabs.tab>
 
       <Tabs.tab
+        active?={@active_tab == "messages"}
+        data-testid="messages-tab"
+        name="main"
+        phx-click="tabs:select"
+        phx-value-tab="messages"
+      >
+        <:label>
+          <Notification.render notification={@messages.notification}>
+            <.icon name="hero-chat-bubble-left-mini" class="size-5" />
+          </Notification.render>
+        </:label>
+        <:indicator>
+          <Tabs.count count={@messages.count} data-testid="messages-count" />
+        </:indicator>
+
+        <.section>
+          <:title>Ephemeral chit-chat</:title>
+          <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
+          <Messages.render messages={@messages} stream={@streams.messages} />
+        </.section>
+      </Tabs.tab>
+
+      <Tabs.tab
         active?={@active_tab == "ideas"}
         name="main"
         phx-click="tabs:select"
@@ -194,29 +217,6 @@ defmodule HappenWeb.RoomLive do
             </div>
             <Ideas.render ideas={@ideas} user_id={@user.data.id} />
           </div>
-        </.section>
-      </Tabs.tab>
-
-      <Tabs.tab
-        active?={@active_tab == "messages"}
-        data-testid="messages-tab"
-        name="main"
-        phx-click="tabs:select"
-        phx-value-tab="messages"
-      >
-        <:label>
-          <Notification.render notification={@messages.notification}>
-            <.icon name="hero-chat-bubble-left-mini" class="size-5" />
-          </Notification.render>
-        </:label>
-        <:indicator>
-          <Tabs.count count={@messages.count} data-testid="messages-count" />
-        </:indicator>
-
-        <.section>
-          <:title>Ephemeral chit-chat</:title>
-          <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
-          <Messages.render messages={@messages} stream={@streams.messages} />
         </.section>
       </Tabs.tab>
     </Tabs.render>
