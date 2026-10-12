@@ -39,7 +39,7 @@ defmodule HappenWeb.RoomLive do
           |> assign(room: %{data: %{key: room_key, name: room_name}})
           |> assign(view: "main")
           |> assign(tz: tz)
-          |> assign(active_tab: "ideas")
+          |> assign(active_tab: "presences")
           |> delegate_mount(params, session)
 
         {:ok, socket}
@@ -129,14 +129,14 @@ defmodule HappenWeb.RoomLive do
         {render_slot(@head)}
       </div>
 
-      <div class="flex gap-4 justify-between items-baseline">
-        <h3 :if={@title != []} class="small-caps tracking-wider font-bold">
+      <div class="flex gap-4 justify-between items-end">
+        <h3 :if={@title != []} class="small-caps tracking-wider font-bold leading-none">
           {render_slot(@title)}
         </h3>
         <div :if={@actions != []}>{render_slot(@actions)}</div>
       </div>
 
-      <div class="mt-2">{render_slot(@inner_block)}</div>
+      <div class="mt-3">{render_slot(@inner_block)}</div>
     </section>
     """
   end
@@ -153,6 +153,23 @@ defmodule HappenWeb.RoomLive do
   defp view_main(assigns) do
     ~H"""
     <Tabs.render>
+      <Tabs.tab
+        active?={@active_tab == "presences"}
+        name="main"
+        phx-click="tabs:select"
+        phx-value-tab="presences"
+      >
+        <:label><.icon name="hero-users-solid" class="size-5" /></:label>
+        <:indicator>
+          <Tabs.count count={length(@presences)} data-testid="presences-count" />
+        </:indicator>
+        <.section>
+          <:title>Available now</:title>
+          <:actions :if={@access_kind == :invitation}><Invitation.render_button /></:actions>
+          <Presences.render presences={@presences} tz={@tz} />
+        </.section>
+      </Tabs.tab>
+
       <Tabs.tab
         active?={@active_tab == "ideas"}
         name="main"
@@ -200,23 +217,6 @@ defmodule HappenWeb.RoomLive do
           <:title>Ephemeral chit-chat</:title>
           <Messages.render_form :if={@active_tab == "messages"} messages={@messages} />
           <Messages.render messages={@messages} stream={@streams.messages} />
-        </.section>
-      </Tabs.tab>
-
-      <Tabs.tab
-        active?={@active_tab == "presences"}
-        name="main"
-        phx-click="tabs:select"
-        phx-value-tab="presences"
-      >
-        <:label><.icon name="hero-users-solid" class="size-5" /></:label>
-        <:indicator>
-          <Tabs.count count={length(@presences)} data-testid="presences-count" />
-        </:indicator>
-        <.section>
-          <:title>Available now</:title>
-          <:actions :if={@access_kind == :invitation}><Invitation.render_button /></:actions>
-          <Presences.render presences={@presences} tz={@tz} />
         </.section>
       </Tabs.tab>
     </Tabs.render>
